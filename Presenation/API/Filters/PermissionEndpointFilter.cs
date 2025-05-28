@@ -62,8 +62,16 @@ public class PermissionEndpointFilter(IYuDbContext dbContext, IHttpContextAccess
 
         if (user == null)
         {
-            context.HttpContext.Response.StatusCode = 404;
-            await context.HttpContext.Response.WriteAsync("User not found");
+
+            context.HttpContext.Response.Cookies.Append("token", "delete", new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(-1),
+                HttpOnly = false,
+                SameSite = SameSiteMode.None,
+                Secure = true,
+            });
+
+            await next();
             return;
         }
 

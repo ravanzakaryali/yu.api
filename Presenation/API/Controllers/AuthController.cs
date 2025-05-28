@@ -9,4 +9,11 @@ public class AuthController : BaseApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         => Ok(await Mediator.Send(new LoginCommand(request.PhoneNumber)));
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await Mediator.Send(new LogoutCommand());
+        return NoContent();
+    }
 }
