@@ -25,6 +25,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasDefaultValue("")
             .IsRequired(false);
 
+        builder.HasQueryFilter(u => !u.IsDeleted && u.IsActive);
+
         builder.ToTable("Users", Schemas.Identity);
     }
 }

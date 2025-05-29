@@ -35,8 +35,7 @@ internal class ConfirmCodeCommandHandler(IYuDbContext dbContext, IHttpContextAcc
 
         return new GetUserResponseDto()
         {
-            Name = member.Name,
-            Surname = member.Surname,
+            FullName = member.FullName,
             PhoneNumber = member.PhoneNumber!,
             Roles = roles,
         };

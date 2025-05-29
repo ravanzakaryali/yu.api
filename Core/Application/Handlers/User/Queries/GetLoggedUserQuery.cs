@@ -16,8 +16,7 @@ internal class GetLoggedUserQueryHandler(IUnitOfWorkService unitOfWorkService) :
 
         return new GetUserResponseDto
         {
-            Name = user.Name,
-            Surname = user.Surname,
+            FullName = user.FullName,
             PhoneNumber = user.PhoneNumber!,
             Roles = roles
         };

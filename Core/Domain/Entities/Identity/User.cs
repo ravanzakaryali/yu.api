@@ -2,8 +2,7 @@ namespace Yu.Domain.Entities;
 
 public class User : IdentityUser<string>, IBaseEntity
 {
-    public string Name { get; set; } = null!;
-    public string Surname { get; set; } = null!;
+    public string FullName { get; set; } = null!;
     public string? ConfirmCode { get; set; }
     public override string? Email { get; set; }
     public DateTime? CreatedConfirmCodeDate { get; set; }

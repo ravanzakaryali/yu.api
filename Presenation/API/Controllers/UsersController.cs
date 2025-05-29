@@ -10,4 +10,20 @@ public class UsersController : BaseApiController
     [HttpPost("confirm-code")]
     public async Task<IActionResult> ConfirmCode([FromBody] ConfirmCodeRequest request)
         => Ok(await Mediator.Send(new ConfirmCodeCommand(request.PhoneNumber, request.Code)));
+
+    [HttpPost("delete")]
+    [Authorize]
+    public async Task<IActionResult> DeleteUser()
+    {
+        await Mediator.Send(new DeleteLoggedUserCommand());
+        return NoContent();
+    }
+
+    // [HttpPatch]
+    // [Authorize]
+    // public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
+    // {
+    //     var command = new UpdateUserCommand(request.Name, request.Surname, request.PhoneNumber);
+    //     return Ok(await Mediator.Send(command));
+    // }
 }
