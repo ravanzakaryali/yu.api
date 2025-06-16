@@ -1,6 +1,6 @@
 namespace Yu.Application.Handlers;
 
-public record RegisterCommand(string Name, string Surname, string PhoneNumber) : IRequest<RegisterResponseDto>;
+public record RegisterCommand(string FullName, string PhoneNumber) : IRequest<RegisterResponseDto>;
 
 public class RegisterCommandHandler(IYuDbContext dbContext, IUnitOfWorkService unitOfWorkService) : IRequestHandler<RegisterCommand, RegisterResponseDto>
 {
@@ -17,8 +17,7 @@ public class RegisterCommandHandler(IYuDbContext dbContext, IUnitOfWorkService u
 
         Member newMember = await unitOfWorkService.IdentityService.RegisterAsync(new RegisterDto
         {
-            Name = request.Name,
-            Surname = request.Surname,
+            FullName = request.FullName,
             PhoneNumber = request.PhoneNumber,
             ConfirmCode = randomConfirmNumber,
         });

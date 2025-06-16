@@ -6,8 +6,7 @@ public class IdentityService(UserManager<User> userManager, RoleManager<Role> ro
     {
         Member newUser = new()
         {
-            Name = register.Name,
-            Surname = register.Surname,
+            FullName = register.FullName,
             PhoneNumber = register.PhoneNumber,
             UserName = register.PhoneNumber,
             ConfirmCode = register.ConfirmCode,

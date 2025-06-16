@@ -8,6 +8,8 @@ public static class ConfigureService
             options.UseSqlServer(configuration.GetConnectionString("SqlServer"),
                 b => b.MigrationsAssembly(typeof(YuDbContext).Assembly.FullName)));
 
+
+
         services.AddScoped<IYuDbContext>(provider => provider.GetRequiredService<YuDbContext>());
 
         services.AddIdentity<User, Role>(opt =>
@@ -36,6 +38,9 @@ public static class ConfigureService
                 ClockSkew = TimeSpan.Zero,
             };
         });
+
+        services.AddScoped<EntitySaveChangesInterceptor>();
+        services.AddScoped<OrderInterceptor>();
 
         return services;
     }
