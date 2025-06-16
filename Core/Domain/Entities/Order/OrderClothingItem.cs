@@ -2,6 +2,7 @@ namespace Yu.Domain.Entities;
 
 public class OrderClothingItem : BaseAuditableEntity
 {
+    public int Count { get; set; }
     public int OrderServiceId { get; set; }
     public OrderService OrderService { get; set; } = null!;
     public int ClothingItemId { get; set; }

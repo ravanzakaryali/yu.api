@@ -6,11 +6,12 @@ public record DeleteLoggedUserCommand : IRequest;
 internal class DeleteLoggedUserCommandHandler(
     IHttpContextAccessor httpContextAccessor,
     IYuDbContext dbContext,
-    IUnitOfWorkService unitOfWorkService) : IRequestHandler<DeleteLoggedUserCommand>
+    IUnitOfWorkService unitOfWorkService,
+    ICurrentUserService currentUserService) : IRequestHandler<DeleteLoggedUserCommand>
 {
     public async Task Handle(DeleteLoggedUserCommand request, CancellationToken cancellationToken)
     {
-        string userId = unitOfWorkService.CurrentUserService.UserId
+        string userId = currentUserService.UserId
             ?? throw new UnauthorizedAccessException("User not found");
 
         User user = await unitOfWorkService.UserService.FindById(userId)

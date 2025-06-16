@@ -18,6 +18,11 @@ public class ServiceConfiguration : IEntityTypeConfiguration<Service>
             .IsRequired()
             .HasMaxLength(500);
 
+        builder.Property(s => s.ServiceType)
+            .HasConversion(new EnumToStringConverter<ServiceType>())
+            .HasDefaultValue(ServiceType.OnlyCount)
+            .IsRequired();
+
         builder.ToTable("Services", Schemas.Default);
     }
 }

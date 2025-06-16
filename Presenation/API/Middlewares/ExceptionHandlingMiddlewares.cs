@@ -5,17 +5,14 @@ public class ExceptionHandling
     private readonly RequestDelegate _next;
     private readonly ILogger _logger;
     private ICurrentUserService? _currentUserService;
-    private IUnitOfWorkService? _unitOfWork;
-
     public ExceptionHandling(RequestDelegate next, ILogger<ExceptionHandling> logger)
     {
         _next = next;
         _logger = logger;
     }
-    public async Task InvokeAsync(HttpContext httpContext, IUnitOfWorkService unitOfWork)
+    public async Task InvokeAsync(HttpContext httpContext, ICurrentUserService currentUserService)
     {
-        _unitOfWork = unitOfWork;
-        _currentUserService = unitOfWork.CurrentUserService;
+        _currentUserService = currentUserService;
         try
         {
             await _next(httpContext);

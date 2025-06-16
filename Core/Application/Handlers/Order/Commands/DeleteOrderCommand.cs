@@ -12,7 +12,6 @@ internal class DeleteOrderCommandHandler(IYuDbContext dbContext) : IRequestHandl
 
         
 
-        dbContext.Orders.Remove(order);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

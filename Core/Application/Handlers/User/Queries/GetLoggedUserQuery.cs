@@ -2,11 +2,11 @@ namespace Yu.Application.Handlers;
 
 public record GetLoggedUserQuery : IRequest<GetUserResponseDto>;
 
-internal class GetLoggedUserQueryHandler(IUnitOfWorkService unitOfWorkService) : IRequestHandler<GetLoggedUserQuery, GetUserResponseDto>
+internal class GetLoggedUserQueryHandler(ICurrentUserService currentUserService, IUnitOfWorkService unitOfWorkService) : IRequestHandler<GetLoggedUserQuery, GetUserResponseDto>
 {
     public async Task<GetUserResponseDto> Handle(GetLoggedUserQuery request, CancellationToken cancellationToken)
     {
-        string? userId = unitOfWorkService.CurrentUserService.UserId
+        string? userId = currentUserService.UserId
             ?? throw new UnauthorizedAccessException("User is not authenticated");
 
         User? user = await unitOfWorkService.UserService.FindById(userId)

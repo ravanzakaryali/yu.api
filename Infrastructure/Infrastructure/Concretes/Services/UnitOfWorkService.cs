@@ -5,19 +5,15 @@ public class UnitOfWorkService : IUnitOfWorkService
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly IConfiguration _configuration;
-    
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UnitOfWorkService(
         UserManager<User> userManager,
         RoleManager<Role> roleManager,
-        IConfiguration configuration,
-        IHttpContextAccessor httpContextAccessor)
+        IConfiguration configuration)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _configuration = configuration;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     private ITokenService? _tokenService;
@@ -31,7 +27,4 @@ public class UnitOfWorkService : IUnitOfWorkService
 
     private IRoleService? _roleService;
     public IRoleService RoleService => _roleService ??= new RoleService(_userManager);
-
-    private ICurrentUserService? _currentUserService;
-    public ICurrentUserService CurrentUserService => _currentUserService ??= new CurrentUserService(_httpContextAccessor);
 }

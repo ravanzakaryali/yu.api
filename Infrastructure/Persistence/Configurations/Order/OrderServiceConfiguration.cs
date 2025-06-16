@@ -10,7 +10,7 @@ public class OrderServiceConfiguration : IEntityTypeConfiguration<OrderService>
         builder
             .HasMany(os => os.OrderClothingItems)
             .WithOne(o => o.OrderService)
-            .HasForeignKey(os => os.OrderId)
+            .HasForeignKey(os => os.OrderServiceId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }

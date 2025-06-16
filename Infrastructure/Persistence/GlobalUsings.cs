@@ -14,6 +14,9 @@ global using Yu.Persistence.Constants;
 global using Yu.Persistence.Extensions;
 global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 global using Yu.Domain.Enums;
+global using Yu.Persistence.Interceptors;
+global using Microsoft.EntityFrameworkCore.ChangeTracking;
+global using Microsoft.EntityFrameworkCore.Diagnostics;
 
 
 

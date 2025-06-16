@@ -18,13 +18,13 @@ namespace Persistence.Migrations
                 type: "int",
                 nullable: true);
 
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.AddColumn<string>(
                 name: "ServiceType",
                 schema: "dbo",
                 table: "Services",
-                type: "int",
+                type: "nvarchar(max)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: "OnlyCount");
 
             migrationBuilder.AddColumn<int>(
                 name: "OrderServiceId",
@@ -42,10 +42,10 @@ namespace Persistence.Migrations
                     Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     House = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Apartment = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -57,11 +57,12 @@ namespace Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Addresses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Addresses_Users_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Addresses_Users_UserId",
+                        column: x => x.UserId,
                         principalSchema: "id",
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,6 +126,7 @@ namespace Persistence.Migrations
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AddressId = table.Column<int>(type: "int", nullable: false),
+                    MemberId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getutcdate()"),
@@ -141,6 +143,12 @@ namespace Persistence.Migrations
                         principalTable: "Addresses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_Users_MemberId",
+                        column: x => x.MemberId,
+                        principalSchema: "id",
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -195,6 +203,39 @@ namespace Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DeleteOrders_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FileId = table.Column<int>(type: "int", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getutcdate()"),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getutcdate()"),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderImages_Files_FileId",
+                        column: x => x.FileId,
+                        principalSchema: "dbo",
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderImages_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
@@ -298,10 +339,10 @@ namespace Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Count = table.Column<int>(type: "int", nullable: false),
                     OrderServiceId = table.Column<int>(type: "int", nullable: false),
                     ClothingItemId = table.Column<int>(type: "int", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: false),
-                    OrderId1 = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getutcdate()"),
@@ -319,13 +360,13 @@ namespace Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderClothingItem_OrderServices_OrderId",
-                        column: x => x.OrderId,
+                        name: "FK_OrderClothingItem_OrderServices_OrderServiceId",
+                        column: x => x.OrderServiceId,
                         principalTable: "OrderServices",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_OrderClothingItem_Orders_OrderId1",
-                        column: x => x.OrderId1,
+                        name: "FK_OrderClothingItem_Orders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -338,9 +379,9 @@ namespace Persistence.Migrations
                 column: "OrderServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Addresses_UserId1",
+                name: "IX_Addresses_UserId",
                 table: "Addresses",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClothingItems_PriceId",
@@ -374,14 +415,29 @@ namespace Persistence.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderClothingItem_OrderId1",
+                name: "IX_OrderClothingItem_OrderServiceId",
                 table: "OrderClothingItem",
-                column: "OrderId1");
+                column: "OrderServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderImages_FileId",
+                table: "OrderImages",
+                column: "FileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderImages_OrderId",
+                table: "OrderImages",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_AddressId",
                 table: "Orders",
                 column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_MemberId",
+                table: "Orders",
+                column: "MemberId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderServices_OrderId",
@@ -429,6 +485,9 @@ namespace Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderClothingItem");
+
+            migrationBuilder.DropTable(
+                name: "OrderImages");
 
             migrationBuilder.DropTable(
                 name: "OrderStatusHistories");

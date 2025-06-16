@@ -3,11 +3,11 @@ namespace Yu.Application.DTOs;
 
 public record CreateAddressCommand(string City, string Street, string House, string? Apartment, string? PostalCode) : IRequest;
 
-internal class CreateAddressCommandHandler(IYuDbContext yuDbContext, IUnitOfWorkService unitOfWorkService) : IRequestHandler<CreateAddressCommand>
+internal class CreateAddressCommandHandler(IYuDbContext yuDbContext, ICurrentUserService currentUserService) : IRequestHandler<CreateAddressCommand>
 {
     public async Task Handle(CreateAddressCommand request, CancellationToken cancellationToken)
     {
-        var userId = unitOfWorkService.CurrentUserService.UserId
+        var userId = currentUserService.UserId
                 ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         Member? member = await yuDbContext.Members

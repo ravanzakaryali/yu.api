@@ -12,7 +12,23 @@ internal class GetOrderDetailsQueryHandler(IYuDbContext dbContext) : IRequestHan
             .FirstOrDefaultAsync(o => o.Id == request.OrderId, cancellationToken)
             ?? throw new NotFoundException(nameof(Order), request.OrderId);
 
-        throw new NotFoundException(nameof(Order), request.OrderId);
+        OrderDetailsResponseDto orderResponse = new()
+        {
+            OrderNumber = order.OrderNumber,
+            Comment = order.Comment,
+            TotalPrice = order.TotalPrice,
+            OrderStatusHistory = [.. order.OrderStatusHistories
+                .Select(osh => new OrderStatusHistoryResponseDto
+                {
+                    OrderStatus = osh.OrderStatus,
+                    SubStatus = osh.SubStatus
+                })],
+        };
+
+
+
+        return orderResponse;
+
     }
 
 }

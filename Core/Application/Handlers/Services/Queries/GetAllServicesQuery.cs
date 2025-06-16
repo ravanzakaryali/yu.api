@@ -14,6 +14,7 @@ internal class GetAllServicesQueryHandler(IYuDbContext dbContext) : IRequestHand
                 Title = s.Title,
                 SubTitle = s.SubTitle,
                 Desciption = s.Desciption,
+                ServiceType = s.ServiceType,
                 Images = s.Images.Select(i => new AssetResponseDto
                 {
                     FileName = i.Name,

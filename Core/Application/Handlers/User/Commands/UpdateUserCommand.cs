@@ -7,11 +7,12 @@ public record UpdateUserCommand(string? Email, string? FullName) : IRequest<GetU
 internal class UpdateUserCommandHandler(
     IYuDbContext dbContext,
     IUnitOfWorkService unitOfWorkService,
+    ICurrentUserService currentUserService,
     UserManager<User> userManager) : IRequestHandler<UpdateUserCommand, GetUserResponseDto>
 {
     public async Task<GetUserResponseDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        string userId = unitOfWorkService.CurrentUserService.UserId
+        string userId = currentUserService.UserId
             ?? throw new UnauthorizedAccessException("User not found");
 
         User user = await unitOfWorkService.UserService.FindById(userId)

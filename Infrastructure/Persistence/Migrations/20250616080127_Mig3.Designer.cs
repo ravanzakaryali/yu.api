@@ -12,7 +12,7 @@ using Yu.Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(YuDbContext))]
-    [Migration("20250616004429_Mig3")]
+    [Migration("20250616080127_Mig3")]
     partial class Mig3
     {
         /// <inheritdoc />
@@ -169,6 +169,9 @@ namespace Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Apartment")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -206,15 +209,13 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Addresses");
                 });
@@ -414,6 +415,10 @@ namespace Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("OrderNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -436,6 +441,8 @@ namespace Persistence.Migrations
 
                     b.HasIndex("AddressId");
 
+                    b.HasIndex("MemberId");
+
                     b.ToTable("Orders");
                 });
 
@@ -448,6 +455,9 @@ namespace Persistence.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ClothingItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Count")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
@@ -471,9 +481,6 @@ namespace Persistence.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderId1")
-                        .HasColumnType("int");
-
                     b.Property<int>("OrderServiceId")
                         .HasColumnType("int");
 
@@ -491,9 +498,58 @@ namespace Persistence.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("OrderId1");
+                    b.HasIndex("OrderServiceId");
 
                     b.ToTable("OrderClothingItem");
+                });
+
+            modelBuilder.Entity("Yu.Domain.Entities.OrderImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<int>("FileId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderImages");
                 });
 
             modelBuilder.Entity("Yu.Domain.Entities.OrderReason", b =>
@@ -794,8 +850,11 @@ namespace Persistence.Migrations
                     b.Property<int?>("PriceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServiceType")
-                        .HasColumnType("int");
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("OnlyCount");
 
                     b.Property<string>("SubTitle")
                         .IsRequired()
@@ -1032,7 +1091,9 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Yu.Domain.Entities.Member", "User")
                         .WithMany("Addresses")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -1082,7 +1143,15 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Yu.Domain.Entities.Member", "Member")
+                        .WithMany("Orders")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Address");
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("Yu.Domain.Entities.OrderClothingItem", b =>
@@ -1093,16 +1162,16 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Yu.Domain.Entities.OrderService", "OrderService")
-                        .WithMany("OrderClothingItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Yu.Domain.Entities.Order", "Order")
                         .WithMany("OrderClothingItems")
-                        .HasForeignKey("OrderId1")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Yu.Domain.Entities.OrderService", "OrderService")
+                        .WithMany("OrderClothingItems")
+                        .HasForeignKey("OrderServiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ClothingItem");
@@ -1110,6 +1179,25 @@ namespace Persistence.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("OrderService");
+                });
+
+            modelBuilder.Entity("Yu.Domain.Entities.OrderImage", b =>
+                {
+                    b.HasOne("Yu.Domain.Entities.File", "File")
+                        .WithMany("OrderImages")
+                        .HasForeignKey("FileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Yu.Domain.Entities.Order", "Order")
+                        .WithMany("Images")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("File");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Yu.Domain.Entities.OrderService", b =>
@@ -1158,9 +1246,16 @@ namespace Persistence.Migrations
                     b.Navigation("OrderClothingItems");
                 });
 
+            modelBuilder.Entity("Yu.Domain.Entities.File", b =>
+                {
+                    b.Navigation("OrderImages");
+                });
+
             modelBuilder.Entity("Yu.Domain.Entities.Order", b =>
                 {
                     b.Navigation("DeleteOrders");
+
+                    b.Navigation("Images");
 
                     b.Navigation("OrderClothingItems");
 
@@ -1194,6 +1289,8 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Yu.Domain.Entities.Member", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

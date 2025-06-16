@@ -5,8 +5,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddApplicationServices();
 
 
-builder.Services.AddInfrastructureServices();
 builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddInfrastructureServices();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>

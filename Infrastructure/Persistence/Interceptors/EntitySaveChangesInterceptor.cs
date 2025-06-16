@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Yu.Domain.Entities.Base;
-
 namespace Yu.Persistence.Interceptors;
 
 public class EntitySaveChangesInterceptor(ICurrentUserService currentUserService) : SaveChangesInterceptor

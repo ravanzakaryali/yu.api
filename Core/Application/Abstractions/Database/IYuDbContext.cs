@@ -5,6 +5,7 @@ public interface IYuDbContext
     DbSet<User> Users { get; }
     DbSet<Member> Members { get; }
     DbSet<Yu.Domain.Entities.File> Files { get; }
+    DbSet<OrderImage> OrderImages { get; }
     DbSet<Service> Services { get; }
     DbSet<Price> Prices { get; }
     DbSet<ClothingItem> ClothingItems { get; }

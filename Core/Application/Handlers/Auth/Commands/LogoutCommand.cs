@@ -4,11 +4,12 @@ public record LogoutCommand : IRequest;
 
 internal class LogoutCommandHandler(
     IUnitOfWorkService unitOfWorkService,
+    ICurrentUserService currentUserService,
     IHttpContextAccessor httpContextAccessor) : IRequestHandler<LogoutCommand>
 {
     public async Task Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        string userId = unitOfWorkService.CurrentUserService.UserId ?? throw new UnauthorizedAccessException();
+        string userId = currentUserService.UserId ?? throw new UnauthorizedAccessException();
 
         _ = await unitOfWorkService.UserService.FindById(userId)
             ?? throw new UnauthorizedAccessException("User not found");

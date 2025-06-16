@@ -9,6 +9,4 @@ public interface IUnitOfWorkService
     IUserService UserService { get; }
 
     IRoleService RoleService { get; }
-
-    ICurrentUserService CurrentUserService { get; }
 }

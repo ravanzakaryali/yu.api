@@ -1,6 +1,6 @@
 namespace Yu.Application.Handlers;
 
-public record CreateServiceCommand(string Title, string SubTitle, string Desciption, List<int> ImagesIds) :
+public record CreateServiceCommand(string Title, string SubTitle, string Desciption, ServiceType ServiceType, List<int> ImagesIds) :
     IRequest<ServiceResponseDto>;
 
 public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandler<CreateServiceCommand, ServiceResponseDto>
@@ -16,6 +16,7 @@ public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandl
         {
             Title = request.Title,
             SubTitle = request.SubTitle,
+            ServiceType = request.ServiceType,
             Desciption = request.Desciption,
             Images = files
         });

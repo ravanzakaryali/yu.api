@@ -7,6 +7,7 @@ public static class ConfigureService
         services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
         services.AddStorage<FireBaseStorage>();
         services.AddScoped<IStorageService, StorageService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         return services;
     }
 
