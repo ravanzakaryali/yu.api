@@ -18,6 +18,7 @@ internal class GetLoggedUserQueryHandler(IUnitOfWorkService unitOfWorkService) :
         {
             FullName = user.FullName,
             PhoneNumber = user.PhoneNumber!,
+            Email = user.Email,
             Roles = roles
         };
     }

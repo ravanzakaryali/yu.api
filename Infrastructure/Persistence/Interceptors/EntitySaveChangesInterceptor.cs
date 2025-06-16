@@ -19,12 +19,12 @@ public class EntitySaveChangesInterceptor(ICurrentUserService currentUserService
         {
             if (entity.State == EntityState.Added)
             {
-                entity.Entity.CreatedDate = DateTime.UtcNow;
+                entity.Entity.CreatedDate = DateTime.UtcNow.AddHours(4);
                 entity.Entity.CreatedBy = currentUserService.UserId ?? "System";
             }
             else if (entity.State == EntityState.Modified)
             {
-                entity.Entity.UpdatedDate = DateTime.UtcNow;
+                entity.Entity.UpdatedDate = DateTime.UtcNow.AddHours(4);
                 entity.Entity.UpdatedBy = currentUserService.UserId ?? "System";
             }
         }

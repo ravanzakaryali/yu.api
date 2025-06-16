@@ -12,6 +12,8 @@ global using Yu.Domain.Entities;
 global using Yu.Application.Abstractions;
 global using Yu.Persistence.Constants;
 global using Yu.Persistence.Extensions;
+global using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+global using Yu.Domain.Enums;
 
 
 

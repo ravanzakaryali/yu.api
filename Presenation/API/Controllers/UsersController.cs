@@ -19,11 +19,16 @@ public class UsersController : BaseApiController
         return NoContent();
     }
 
-    // [HttpPatch]
-    // [Authorize]
-    // public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
-    // {
-    //     var command = new UpdateUserCommand(request.Name, request.Surname, request.PhoneNumber);
-    //     return Ok(await Mediator.Send(command));
-    // }
+    [HttpPost("address")]
+    [Authorize]
+    public async Task<IActionResult> AddAddress([FromBody] AddressRequestDto request)
+    {
+        await Mediator.Send(new CreateAddressCommand(request.City, request.Street, request.House, request.Apartment, request.PostalCode));
+        return NoContent();
+    }
+
+    [HttpPatch]
+    [Authorize]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDto request)
+        => Ok(await Mediator.Send(new UpdateUserCommand(request.Email, request.FullName)));
 }
