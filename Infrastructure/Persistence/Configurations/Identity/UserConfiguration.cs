@@ -4,7 +4,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.Property(e => e.Id).HasDefaultValueSql("NEWID()");
+        builder.Property(e => e.Id)
+            .HasDefaultValueSql("NEWID()")
+            .ValueGeneratedOnAdd();
         builder.Property(u => u.IsActive)
             .HasDefaultValue(true)
             .IsRequired();

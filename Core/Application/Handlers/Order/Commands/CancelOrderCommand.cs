@@ -1,11 +1,11 @@
 
 namespace Yu.Domain.Entities;
 
-public record DeleteOrderCommand(int OrderId, int ReasonId) : IRequest;
+public record CancelOrderCommand(int OrderId, int ReasonId) : IRequest;
 
-internal class DeleteOrderCommandHandler(IYuDbContext dbContext) : IRequestHandler<DeleteOrderCommand>
+internal class CancelOrderCommandHandler(IYuDbContext dbContext) : IRequestHandler<CancelOrderCommand>
 {
-    public async Task Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CancelOrderCommand request, CancellationToken cancellationToken)
     {
         Order order = await dbContext.Orders.FirstOrDefaultAsync(o => o.Id == request.OrderId, cancellationToken)
             ?? throw new NotFoundException(nameof(Order), request.OrderId);

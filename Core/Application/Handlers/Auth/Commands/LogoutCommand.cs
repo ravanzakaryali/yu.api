@@ -11,7 +11,7 @@ internal class LogoutCommandHandler(
     {
         string userId = currentUserService.UserId ?? throw new UnauthorizedAccessException();
 
-        _ = await unitOfWorkService.UserService.FindById(userId)
+        _ = await unitOfWorkService.UserService.FindByIdAsync(userId)
             ?? throw new UnauthorizedAccessException("User not found");
 
         httpContextAccessor.HttpContext?.Response.Cookies.Append("token", "delete", new CookieOptions

@@ -2,6 +2,14 @@ namespace Yu.Domain.Entities;
 
 public class User : IdentityUser<string>, IBaseEntity
 {
+    public User()
+    {
+        Id = Guid.NewGuid().ToString();
+        SecurityStamp = Guid.NewGuid().ToString();
+        CreatedDate = DateTime.UtcNow;
+        UpdatedDate = DateTime.UtcNow;
+    }
+
     public string FullName { get; set; } = null!;
     public string? ConfirmCode { get; set; }
     public override string? Email { get; set; }

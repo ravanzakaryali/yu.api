@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace Yu.Application.DTOs;
 
 public class OrderDetailsResponseDto

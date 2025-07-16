@@ -1,6 +1,6 @@
 namespace Yu.Persistence.Interceptors;
 
-public class OrderInterceptor(ICurrentUserService currentUserService) : SaveChangesInterceptor
+public class OrderInterceptor() : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
@@ -15,7 +15,7 @@ public class OrderInterceptor(ICurrentUserService currentUserService) : SaveChan
         {
             if (entity.State == EntityState.Added)
             {
-                entity.Entity.OrderNumber = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+                entity.Entity.OrderNumber = entity.Entity.MemberId + "-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             }
         }
     }

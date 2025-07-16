@@ -8,9 +8,11 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
     {
         if (currentUserService.UserId is null)
             throw new UnauthorizedAccessException("User is not authenticated");
+
         Member? member = await dbContext.Members
             .FirstOrDefaultAsync(m => m.Id == currentUserService.UserId, cancellationToken)
             ?? throw new UnauthorizedAccessException("User not found");
+
         Order order = new()
         {
             Comment = request.Comment,
@@ -19,13 +21,15 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
             MemberId = member.Id,
             Address = new Address
             {
-                City = request.Address.City,
-                Country = "Az",
-                UserId = member.Id,
+                FullAddress = request.Address.FullAddress,
                 Street = request.Address.Street,
-                House = request.Address.House,
+                SubDoor = request.Address.SubDoor,
+                Floor = request.Address.Floor,
                 Apartment = request.Address.Apartment,
-                PostalCode = request.Address.PostalCode
+                Intercom = request.Address.Intercom,
+                Comment = request.Address.Comment,
+                UserId = member.Id,
+                Country = "Az"
             }
         };
 
@@ -42,7 +46,7 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
         if (files.Count != request.Files.Count)
             throw new NotFoundException("Some files not found");
 
-        order.Images = [.. files.Select(f => new OrderImage
+        order.Images = [..files.Select(f => new OrderImage
         {
             FileId = f.Id,
             Order = order,
@@ -87,20 +91,53 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
                 }).ToList() ?? []
             });
         }
+        // pickup date get bax eger 10 dan coxdursa sifaris o zaman get yeni pickup tarixinə keç əgər həmin həftədə yoxdursa 1 həftə sonra
+
+        // orders pickup date gətirməliyəm 
+        // daha sonra dayOfWeek ilə pickup sıralamam lazımdı
+        // sifariş verildiyi andan etibarən baxmalıyam ki, sifariş verildiyi günə yaxın pickup date varsa onu götürüm 
+        // əgər yoxdursa, 1 həftə sonra olanı götürüm
+        // əgər 10 dan çoxdursa, 1 həftə sonra olanı
+        // əgər 10 dan azdursa, həmin həftədə olanı götür
+        // copilot write the code for me this comments
+
+        List<PickupDateSetting> pickupDates = await dbContext.PickupDateSettings
+            .Where(p => p.DayOfWeek == DateTime.UtcNow.DayOfWeek)
+            .ToListAsync(cancellationToken);
+
+        if (pickupDates.Count == 0)
+            throw new NotFoundException("No pickup dates found for today");
+
+        // Get the next pickup date setting
+        PickupDateSetting? nextPickupDate = pickupDates
+            .OrderBy(p => p.StartTime)
+            .FirstOrDefault(p => p.StartTime > TimeOnly.FromDateTime(DateTime.UtcNow));
+        
+        if (nextPickupDate is null)
+        {
+            // If no pickup date is found for today, get the next available pickup date in the next week
+            nextPickupDate = await dbContext.PickupDateSettings
+                .Where(p => p.DayOfWeek == DateTime.UtcNow.AddDays(7).DayOfWeek)
+                .OrderBy(p => p.StartTime)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+        if (nextPickupDate is null)
+            throw new NotFoundException("No pickup date found for next week");
+        order.PickupDate = DateTime.UtcNow.Date.Add(nextPickupDate.StartTime.ToTimeSpan());
 
         order.OrderStatusHistories.Add(new OrderStatusHistory
         {
             Comment = "Order created",
             OrderStatus = OrderStatus.PickUp,
             SubStatus = Status.Pending,
-            StatusDate = DateTime.UtcNow.AddHours(4),
+            StatusDate = DateTime.UtcNow,
             Order = order
         });
 
         await dbContext.Orders.AddAsync(order, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        order.OrderNumber += order.Id.ToString("D6");
+        order.OrderNumber += "-"+ order.Id.ToString("D6");
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

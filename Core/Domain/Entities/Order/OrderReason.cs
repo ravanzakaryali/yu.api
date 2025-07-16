@@ -1,11 +1,11 @@
 namespace Yu.Domain.Entities;
 
-public class OrderReason : BaseAuditableEntity
+public class CancelOrderReason : BaseAuditableEntity
 {
-    public OrderReason()
+    public CancelOrderReason()
     {
-        DeleteOrder = new HashSet<DeleteOrder>();
+        CancelOrder = new HashSet<CancelOrder>();
     }
     public string Name { get; set; } = null!;
-    public ICollection<DeleteOrder> DeleteOrder { get; set; }
+    public ICollection<CancelOrder> CancelOrder { get; set; }
 }

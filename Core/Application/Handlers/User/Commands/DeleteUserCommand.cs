@@ -14,7 +14,7 @@ internal class DeleteLoggedUserCommandHandler(
         string userId = currentUserService.UserId
             ?? throw new UnauthorizedAccessException("User not found");
 
-        User user = await unitOfWorkService.UserService.FindById(userId)
+        User user = await unitOfWorkService.UserService.FindByIdAsync(userId)
             ?? throw new UnauthorizedAccessException("User not found");
 
         if (user is not { IsDeleted: false })

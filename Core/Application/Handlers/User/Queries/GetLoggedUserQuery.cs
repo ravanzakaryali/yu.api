@@ -9,7 +9,7 @@ internal class GetLoggedUserQueryHandler(ICurrentUserService currentUserService,
         string? userId = currentUserService.UserId
             ?? throw new UnauthorizedAccessException("User is not authenticated");
 
-        User? user = await unitOfWorkService.UserService.FindById(userId)
+        User? user = await unitOfWorkService.UserService.FindByIdAsync(userId)
             ?? throw new UnauthorizedAccessException("User not found");
 
         IList<string> roles = await unitOfWorkService.RoleService.GetRolesByUser(user);

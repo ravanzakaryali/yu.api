@@ -15,7 +15,7 @@ internal class UpdateUserCommandHandler(
         string userId = currentUserService.UserId
             ?? throw new UnauthorizedAccessException("User not found");
 
-        User user = await unitOfWorkService.UserService.FindById(userId)
+        User user = await unitOfWorkService.UserService.FindByIdAsync(userId)
             ?? throw new UnauthorizedAccessException("User not found");
 
         if (request.FullName is not null)

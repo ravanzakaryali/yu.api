@@ -14,10 +14,11 @@ public class YuDbContext(
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderService> OrderServices => Set<OrderService>();
     public DbSet<Address> Addresses => Set<Address>();
-    public DbSet<OrderReason> OrderReasons => Set<OrderReason>();
+    public DbSet<CancelOrderReason> CancelOrderReasons => Set<CancelOrderReason>();
     public DbSet<OrderStatusHistory> OrderStatusHistories => Set<OrderStatusHistory>();
-    public DbSet<DeleteOrder> DeleteOrders => Set<DeleteOrder>();
+    public DbSet<CancelOrder> CancelOrders => Set<CancelOrder>();
     public DbSet<OrderImage> OrderImages => Set<OrderImage>();
+    public DbSet<PickupDateSetting> PickupDateSettings => Set<PickupDateSetting>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -2,6 +2,16 @@ namespace Yu.API.Controllers;
 
 public class AuthController : BaseApiController
 {
+    [HttpPost("add-admin")]
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddAdmin([FromBody] AddAdminRequestDto request)
+        => Ok(await Mediator.Send(new AddAdminCommand(request.FullName, request.Username, request.Password)));
+
+    [HttpPost("login-admin")]
+    [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> LoginMember([FromBody] LoginAdminRequestDto request)
+        => Ok(await Mediator.Send(new LoginAdminCommand(request.Username, request.Password)));
+
     [HttpPost("register")]
     [ProducesResponseType(typeof(RegisterResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)

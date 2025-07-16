@@ -5,7 +5,7 @@ public class Order : BaseAuditableEntity
     public Order()
     {
         Services = new HashSet<OrderService>();
-        DeleteOrders = new HashSet<DeleteOrder>();
+        CancelOrders = new HashSet<CancelOrder>();
         OrderClothingItems = new HashSet<OrderClothingItem>();
         OrderStatusHistories = new HashSet<OrderStatusHistory>();
     }
@@ -18,9 +18,11 @@ public class Order : BaseAuditableEntity
     public Address Address { get; set; } = null!;
     public string MemberId { get; set; } = null!;
     public Member Member { get; set; } = null!;
+    public int PickupDateSettingId { get; set; }
+    public PickupDateSetting PickupDateSetting { get; set; } = null!;
     public ICollection<OrderImage> Images { get; set; } = null!;
     public ICollection<OrderService> Services { get; set; }
-    public ICollection<DeleteOrder> DeleteOrders { get; set; }
+    public ICollection<CancelOrder> CancelOrders { get; set; }
     public ICollection<OrderStatusHistory> OrderStatusHistories { get; set; }
     public ICollection<OrderClothingItem> OrderClothingItems { get; set; }
 }

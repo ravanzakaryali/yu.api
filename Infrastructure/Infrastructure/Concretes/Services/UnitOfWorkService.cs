@@ -23,7 +23,7 @@ public class UnitOfWorkService : IUnitOfWorkService
     public IIdentityService IdentityService => _identityService ??= new IdentityService(_userManager, _roleManager);
 
     private IUserService? _userService;
-    public IUserService UserService => _userService ??= new UserService(_userManager);
+    public IUserService UserService => _userService ??= new UserService(_userManager, _roleManager);
 
     private IRoleService? _roleService;
     public IRoleService RoleService => _roleService ??= new RoleService(_userManager);

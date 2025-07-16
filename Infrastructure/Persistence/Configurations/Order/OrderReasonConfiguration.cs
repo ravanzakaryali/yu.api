@@ -1,9 +1,9 @@
 
 namespace Yu.Persistence.Configurations;
 
-public class OrderReasonConfiguration : IEntityTypeConfiguration<OrderReason>
+public class CancelOrderReasonConfiguration : IEntityTypeConfiguration<CancelOrderReason>
 {
-    public void Configure(EntityTypeBuilder<OrderReason> builder)
+    public void Configure(EntityTypeBuilder<CancelOrderReason> builder)
     {
         builder.ConfigureAuditableBaseEntity();
     }

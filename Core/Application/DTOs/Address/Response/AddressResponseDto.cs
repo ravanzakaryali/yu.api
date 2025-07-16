@@ -1,7 +1,8 @@
-namespace Yu.Domain.Entities;
+namespace Yu.Application.DTOs;
 
-public class Address : BaseAuditableEntity
+public class AddressResponseDto
 {
+    public int Id { get; set; }
     public string FullAddress { get; set; } = null!;
     public string Street { get; set; } = null!;
     public string SubDoor { get; set; } = null!;
@@ -10,6 +11,5 @@ public class Address : BaseAuditableEntity
     public string Intercom { get; set; } = null!;
     public string Comment { get; set; } = null!;
     public string Country { get; set; } = null!;
-    public string UserId { get; set; } = null!;
-    public Member User { get; set; } = null!;
-}
+    public DateTime CreatedDate { get; set; }
+} 

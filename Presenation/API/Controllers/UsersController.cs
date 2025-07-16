@@ -22,12 +22,25 @@ public class UsersController : BaseApiController
         return NoContent();
     }
 
+    [HttpGet("address")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<AddressResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserAddresses()
+        => Ok(await Mediator.Send(new GetUserAddressesQuery()));
+
     [HttpPost("address")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddAddress([FromBody] AddressRequestDto request)
     {
-        await Mediator.Send(new CreateAddressCommand(request.City, request.Street, request.House, request.Apartment, request.PostalCode));
+        await Mediator.Send(new CreateAddressCommand(
+                    request.FullAddress, 
+                    request.Street, 
+                    request.SubDoor, 
+                    request.Floor, 
+                    request.Apartment, 
+                    request.Intercom, 
+                    request.Comment));
         return NoContent();
     }
 
@@ -36,4 +49,11 @@ public class UsersController : BaseApiController
     [ProducesResponseType(typeof(GetUserResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDto request)
         => Ok(await Mediator.Send(new UpdateUserCommand(request.Email, request.FullName)));
+
+    [HttpGet("active-orders")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<ActiveOrderResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserActiveOrders()
+        => Ok(await Mediator.Send(new GetUserActiveOrdersQuery()));
+
 }

@@ -12,8 +12,9 @@ public interface IYuDbContext
     DbSet<Order> Orders { get; }
     DbSet<OrderService> OrderServices { get; }
     DbSet<Address> Addresses { get; }
-    DbSet<OrderReason> OrderReasons { get; }
+    DbSet<CancelOrderReason> CancelOrderReasons { get; }
     DbSet<OrderStatusHistory> OrderStatusHistories { get; }
-    DbSet<DeleteOrder> DeleteOrders { get; }
+    DbSet<CancelOrder> CancelOrders { get; }
+    DbSet<PickupDateSetting> PickupDateSettings { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

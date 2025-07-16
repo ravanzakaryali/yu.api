@@ -65,7 +65,7 @@ public class ChangeTokenAutheticationMiddlewares
                         //     await _next(httpContext);
                         //     return;
                         // }
-                        User? user = await unitOfWork.UserService.FindById(loginUserId);
+                        User? user = await unitOfWork.UserService.FindByIdAsync(loginUserId);
                         IList<string> roles = await unitOfWork.RoleService.GetRolesByUser(user);
 
                         TokenDto newAccessToken = await unitOfWork.TokenService.GenerateTokenAsync(user);
