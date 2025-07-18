@@ -19,6 +19,7 @@ public class YuDbContext(
     public DbSet<CancelOrder> CancelOrders => Set<CancelOrder>();
     public DbSet<OrderImage> OrderImages => Set<OrderImage>();
     public DbSet<PickupDateSetting> PickupDateSettings => Set<PickupDateSetting>();
+    public DbSet<PromoCode> PromoCodes => Set<PromoCode>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

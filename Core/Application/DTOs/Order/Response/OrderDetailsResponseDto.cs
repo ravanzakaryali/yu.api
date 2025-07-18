@@ -14,10 +14,17 @@ public class OrderDetailsResponseDto
     public ICollection<OrderStatusHistoryResponseDto> OrderStatusHistory { get; set; }
 }
 
+public class OrderDetailsAdminResponseDto : OrderDetailsResponseDto
+{
+    public PromoCodeResponseDto? PromoCode { get; set; }
+    public List<OrderDetailServiceResponseDto> Services { get; set; } = null!;
+    public List<string> Images { get; set; } = null!;
+}
+
 public class OrderStatusHistoryResponseDto
 {
     public OrderStatus OrderStatus { get; set; }
-    public Status SubStatus { get; set; }
+    public Status? SubStatus { get; set; }
 }
 
 public class OrderDetailServiceResponseDto

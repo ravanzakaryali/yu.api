@@ -30,7 +30,25 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("mobile", new OpenApiInfo { Title = "Yu Mobile API", Version = "v1", Description = "Mobile tətbiq üçün API endpoint-ləri" });
+    c.SwaggerDoc("admin", new OpenApiInfo { Title = "Yu Admin API", Version = "v1", Description = "Admin panel üçün API endpoint-ləri" });
+    
+    // Admin və Mobile controller-ları üçün filter
+    c.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        if (docName == "admin")
+        {
+            return apiDesc.RelativePath?.StartsWith("api/admin") == true;
+        }
+        else if (docName == "mobile")
+        {
+            return apiDesc.RelativePath?.StartsWith("api/admin") != true;
+        }
+        return false;
+    });
+});
 
 
 builder.Services.AddControllers(opt => opt.Filters.Add<PermissionEndpointFilter>())
@@ -52,7 +70,12 @@ app.UseChangeTokenAuthetication();
 
 app.MapOpenApi();
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/mobile/swagger.json", "Yu Mobile API v1");
+    c.SwaggerEndpoint("/swagger/admin/swagger.json", "Yu Admin API v1");
+    c.RoutePrefix = string.Empty;
+});
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -61,5 +84,5 @@ app.MapControllers();
 app.UseHttpsRedirection();
 app.UseExceptionHandling();
 app.UseTokenAuthetication();
-app.Urls.Add("http://172.19.8.104:5040");
+app.Urls.Add("http://172.19.8.246:5040");
 app.Run();

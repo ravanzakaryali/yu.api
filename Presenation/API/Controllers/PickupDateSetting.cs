@@ -13,7 +13,7 @@ public class PickupDateSettingController : BaseApiController
 
     [HttpGet]
     [Authorize]
-    [ProducesResponseType(typeof(List<GetPickupDateSettingResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<PickupDateSettingResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllPickupDateSettings()
         => Ok(await Mediator.Send(new GetAllPickupDateQuery()));
 }

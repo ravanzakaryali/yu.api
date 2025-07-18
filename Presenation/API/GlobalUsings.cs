@@ -19,6 +19,7 @@ global using Yu.Application.Handlers;
 global using Yu.Application.Exceptions;
 global using Yu.API.Filters;
 global using Yu.API.Middlewares;
+global using Microsoft.OpenApi.Models;
 
 
 

@@ -1,14 +1,19 @@
 namespace Yu.Application.Handlers;
 
-public record GetOrderDetailsQuery(int OrderId) : IRequest<OrderDetailsResponseDto>;
+public record GetAdminOrderDetailsQuery(int OrderId) : IRequest<OrderDetailsAdminResponseDto>;
 
-internal class GetOrderDetailsQueryHandler(IYuDbContext dbContext) : IRequestHandler<GetOrderDetailsQuery, OrderDetailsResponseDto>
+internal class GetAdminOrderDetailsQueryHandler(IYuDbContext dbContext) : IRequestHandler<GetAdminOrderDetailsQuery, OrderDetailsAdminResponseDto>
 {
-    public async Task<OrderDetailsResponseDto> Handle(GetOrderDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<OrderDetailsAdminResponseDto> Handle(GetAdminOrderDetailsQuery request, CancellationToken cancellationToken)
     {
         Order order = await dbContext.Orders
             .Include(o => o.Services)
+                .ThenInclude(os => os.OrderClothingItems)
+                    .ThenInclude(oci => oci.ClothingItem)
             .Include(o => o.OrderStatusHistories)
+            .Include(o => o.Images)
+                .ThenInclude(oi => oi.File)
+            .Include(o => o.PromoCode)
             .FirstOrDefaultAsync(o => o.Id == request.OrderId, cancellationToken)
             ?? throw new NotFoundException(nameof(Order), request.OrderId);
 
@@ -33,19 +38,29 @@ internal class GetOrderDetailsQueryHandler(IYuDbContext dbContext) : IRequestHan
             }
         }
 
+        List<OrderDetailServiceResponseDto> services = [.. order.Services.Select(os => new OrderDetailServiceResponseDto
+        {
+            ServiceName = os.ServiceName,
+            Count = os.Count,
+            ClothingItem = os.OrderClothingItems?.Select(oci => oci.ClothingItem.Name).ToList()
+        })];
 
-        OrderDetailsResponseDto orderResponse = new()
+        OrderDetailsAdminResponseDto orderResponse = new()
         {
             OrderNumber = order.OrderNumber,
             Comment = order.Comment,
             TotalPrice = order.TotalPrice,
             OrderStatusHistory = orderStatusHistory,
+            Services = services,
+            Images = order.Images.Select(i => i.File.Path).ToList(),
+            PromoCode = order.PromoCode != null ? new PromoCodeResponseDto
+            {
+                Code = order.PromoCode.Code,
+                Type = order.PromoCode.Type,
+                Total = order.PromoCode.Total
+            } : null
         };
 
-
-
         return orderResponse;
-
     }
-
 }

@@ -18,8 +18,10 @@ public class Order : BaseAuditableEntity
     public Address Address { get; set; } = null!;
     public string MemberId { get; set; } = null!;
     public Member Member { get; set; } = null!;
-    public int PickupDateSettingId { get; set; }
-    public PickupDateSetting PickupDateSetting { get; set; } = null!;
+    public int? PickupDateSettingId { get; set; }
+    public int? PromoCodeId { get; set; }
+    public PromoCode? PromoCode { get; set; }
+    public PickupDateSetting? PickupDateSetting { get; set; }
     public ICollection<OrderImage> Images { get; set; } = null!;
     public ICollection<OrderService> Services { get; set; }
     public ICollection<CancelOrder> CancelOrders { get; set; }

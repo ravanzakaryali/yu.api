@@ -1,6 +1,6 @@
 namespace Yu.API.Controllers;
 
-public class OrdersController : BaseApiController
+public class OrdersController : BaseOrdersController
 {
     [HttpGet("reasons")]
     [ProducesResponseType(typeof(IEnumerable<OrderReasonResponseDto>), StatusCodes.Status200OK)]
@@ -31,13 +31,11 @@ public class OrdersController : BaseApiController
         return Ok(await Mediator.Send(new GetOrderDetailsQuery(id)));
     }
 
-    [HttpPatch("{id}/pickup-date")]
+    [HttpGet("pickup-date-settings")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> UpdateOrderPickupDateAsync([FromRoute] int id,
-        [FromBody] UpdateOrderPickupDateRequestDto request)
+    [ProducesResponseType(typeof(IEnumerable<PickupDateSettingResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPickupDateSettingsAsync()
     {
-        await Mediator.Send(new UpdateOrderPickupDateCommand(id, request.PickupDateSettingId));
-        return NoContent();
+        return Ok(await Mediator.Send(new GetPickupDateSettingsQuery()));
     }
 }

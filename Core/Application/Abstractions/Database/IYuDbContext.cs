@@ -16,5 +16,6 @@ public interface IYuDbContext
     DbSet<OrderStatusHistory> OrderStatusHistories { get; }
     DbSet<CancelOrder> CancelOrders { get; }
     DbSet<PickupDateSetting> PickupDateSettings { get; }
+    DbSet<PromoCode> PromoCodes { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

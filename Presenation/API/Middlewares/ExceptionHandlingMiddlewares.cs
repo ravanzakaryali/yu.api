@@ -25,6 +25,10 @@ public class ExceptionHandling
         {
             ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, ex.HttpStatusCode);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, HttpStatusCode.Unauthorized);
+        }
         catch (Exception ex)
         {
             ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex);

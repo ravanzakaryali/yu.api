@@ -124,6 +124,8 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
         if (nextPickupDate is null)
             throw new NotFoundException("No pickup date found for next week");
         order.PickupDate = DateTime.UtcNow.Date.Add(nextPickupDate.StartTime.ToTimeSpan());
+        order.PickupDateSetting = nextPickupDate;
+        order.PickupDateSettingId = nextPickupDate.Id;
 
         order.OrderStatusHistories.Add(new OrderStatusHistory
         {

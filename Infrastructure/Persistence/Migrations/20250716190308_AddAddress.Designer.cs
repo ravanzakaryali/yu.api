@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yu.Persistence;
 
@@ -11,9 +12,11 @@ using Yu.Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(YuDbContext))]
-    partial class YuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250716190308_AddAddress")]
+    partial class AddAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -479,9 +482,6 @@ namespace Persistence.Migrations
                     b.Property<int?>("PickupDateSettingId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PromoCodeId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -500,8 +500,6 @@ namespace Persistence.Migrations
                     b.HasIndex("MemberId");
 
                     b.HasIndex("PickupDateSettingId");
-
-                    b.HasIndex("PromoCodeId");
 
                     b.ToTable("Orders");
                 });
@@ -841,73 +839,6 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Prices");
-                });
-
-            modelBuilder.Entity("Yu.Domain.Entities.PromoCode", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int?>("MaxUsageCount")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("MinumumAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Total")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("PromoCodes");
                 });
 
             modelBuilder.Entity("Yu.Domain.Entities.Role", b =>
@@ -1290,18 +1221,11 @@ namespace Persistence.Migrations
                         .HasForeignKey("PickupDateSettingId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Yu.Domain.Entities.PromoCode", "PromoCode")
-                        .WithMany("Orders")
-                        .HasForeignKey("PromoCodeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Address");
 
                     b.Navigation("Member");
 
                     b.Navigation("PickupDateSetting");
-
-                    b.Navigation("PromoCode");
                 });
 
             modelBuilder.Entity("Yu.Domain.Entities.OrderClothingItem", b =>
@@ -1434,11 +1358,6 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Yu.Domain.Entities.Price", b =>
                 {
                     b.Navigation("ClothingItem");
-                });
-
-            modelBuilder.Entity("Yu.Domain.Entities.PromoCode", b =>
-                {
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Yu.Domain.Entities.Service", b =>

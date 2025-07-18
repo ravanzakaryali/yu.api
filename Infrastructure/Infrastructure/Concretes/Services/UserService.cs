@@ -18,7 +18,7 @@ public class UserService(UserManager<User> userManager, RoleManager<Role> roleMa
         {
             FullName = fullName,
             UserName = username,
-            Email = username // Email tələb olunursa
+            Email = username
         };
         
         var result = await userManager.CreateAsync(user, password);
@@ -27,7 +27,6 @@ public class UserService(UserManager<User> userManager, RoleManager<Role> roleMa
             throw new InvalidOperationException($"User creation failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
         }
         
-        // User-ı yenidən yükləyək ki Id-si düzgün olsun
         var createdUser = await userManager.FindByNameAsync(username) ?? throw new InvalidOperationException("User was not found after creation");
         if (!await roleManager.RoleExistsAsync("Admin"))
         {
