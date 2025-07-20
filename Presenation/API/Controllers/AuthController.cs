@@ -12,6 +12,11 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         => Ok(await Mediator.Send(new LoginCommand(request.PhoneNumber)));
 
+    [HttpPost("confirm-code")]
+    [ProducesResponseType(typeof(GetUserResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ConfirmCode([FromBody] ConfirmCodeRequest request)
+        => Ok(await Mediator.Send(new ConfirmCodeCommand(request.PhoneNumber, request.Code)));
+
     [HttpPost("logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Logout()

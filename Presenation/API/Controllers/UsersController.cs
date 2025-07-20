@@ -8,11 +8,6 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> GetCurrentUser()
         => Ok(await Mediator.Send(new GetLoggedUserQuery()));
 
-    [HttpPost("confirm-code")]
-    [ProducesResponseType(typeof(GetUserResponseDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ConfirmCode([FromBody] ConfirmCodeRequest request)
-        => Ok(await Mediator.Send(new ConfirmCodeCommand(request.PhoneNumber, request.Code)));
-
     [HttpPost("delete")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
