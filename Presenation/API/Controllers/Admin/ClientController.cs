@@ -12,4 +12,9 @@ public class ClientController : BaseAdminApiController
     [ProducesResponseType(typeof(IEnumerable<OrderResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetClientOrdersAsync(string id)
         => Ok(await Mediator.Send(new GetClientOrdersQuery(id)));
+
+    [HttpGet("{id}/promocodes")]
+    [ProducesResponseType(typeof(IEnumerable<ClientPromoCodeResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetClientPromoCodesAsync(string id)
+        => Ok(await Mediator.Send(new GetClientPromoCodesQuery(id)));
 }
