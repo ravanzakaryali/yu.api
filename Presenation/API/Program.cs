@@ -84,5 +84,5 @@ app.MapControllers();
 app.UseHttpsRedirection();
 app.UseExceptionHandling();
 app.UseTokenAuthetication();
-app.Urls.Add("http://172.19.8.246:5040");
+// app.Urls.Add("http://172.19.8.246:5040");
 app.Run();
