@@ -26,8 +26,8 @@ public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandl
         {
             Id = serviceEntry.Entity.Id,
             Title = request.Title,
-            SubTitle = request.SubTitle,
-            Desciption = request.Desciption,
+            Tag = request.SubTitle,
+            SubTitle = request.Desciption,
             Images = [.. files.Select(x => new AssetResponseDto
             {
                 FileName = x.Name,
