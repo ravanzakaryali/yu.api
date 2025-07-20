@@ -15,6 +15,7 @@ public class User : IdentityUser<string>, IBaseEntity
     public override string? Email { get; set; }
     public DateTime? CreatedConfirmCodeDate { get; set; }
     public int ConfirmCodeCount { get; set; } = 0;
+    public DateTime? ConfirmCodeGeneratedDate { get; set; }
     public DateTime? LastLoginDate { get; set; }
     public bool IsDeleted { get; set; } = false;
     public bool IsActive { get; set; } = true;

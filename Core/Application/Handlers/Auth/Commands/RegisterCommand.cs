@@ -2,32 +2,52 @@ namespace Yu.Application.Handlers;
 
 public record RegisterCommand(string FullName, string PhoneNumber) : IRequest<RegisterResponseDto>;
 
-public class RegisterCommandHandler(IYuDbContext dbContext, IUnitOfWorkService unitOfWorkService) : IRequestHandler<RegisterCommand, RegisterResponseDto>
+public class RegisterCommandHandler(IYuDbContext dbContext, IUnitOfWorkService unitOfWorkService, IHttpContextAccessor contextAccessor) : IRequestHandler<RegisterCommand, RegisterResponseDto>
 {
     public async Task<RegisterResponseDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        Member? member = await dbContext.Members
-            .Where(x => x.PhoneNumber == request.PhoneNumber)
-            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        Member member = await dbContext.Members
+            .Where(m => m.PhoneNumber == request.PhoneNumber)
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken)
+                ?? throw new NotFoundException(nameof(Member), request.PhoneNumber);
 
-        if (member is not null)
-            throw new AlreadyExistsException(nameof(Member), request.PhoneNumber);
-
-        string randomConfirmNumber = unitOfWorkService.TokenService.GenerateVerificationCode();
-
-        Member newMember = await unitOfWorkService.IdentityService.RegisterAsync(new RegisterDto
+        TimeSpan expireTimeSpan = member.ConfirmCodeCount switch
         {
-            FullName = request.FullName,
-            PhoneNumber = request.PhoneNumber,
-            ConfirmCode = randomConfirmNumber,
-        });
+            0 => TimeSpan.FromMinutes(1),
+            1 => TimeSpan.FromMinutes(3),
+            2 => TimeSpan.FromMinutes(10),
+            3 => TimeSpan.FromMinutes(30),
+            4 => TimeSpan.FromHours(1),
+            _ => TimeSpan.FromHours(1)
+        };
 
-        // send confirmation code to user
+        Console.WriteLine(DateTime.UtcNow);
+        Console.WriteLine(member.ConfirmCodeGeneratedDate);
+        if (member.ConfirmCodeGeneratedDate.HasValue && DateTime.UtcNow > member.ConfirmCodeGeneratedDate.Value.Add(expireTimeSpan))
+            throw new Exception("Confirm code exp date");
+
+
+
+        member.PhoneNumberConfirmed = true;
+        member.ConfirmCode = null;
+        member.LastLoginDate = DateTime.UtcNow;
+
+
+        TokenDto token = await unitOfWorkService.TokenService.GenerateTokenAsync(member);
+        // string refreshToken = unitOfWorkService.TokenService.GenerateRefreshToken();
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new RegisterResponseDto
+        contextAccessor.HttpContext?.Response.Cookies.Append("token", token.AccessToken, new CookieOptions
         {
-            PhoneNumber = newMember.PhoneNumber!,
+            HttpOnly = true,
+            Expires = token.Expires,
+            Secure = false,
+            SameSite = SameSiteMode.Unspecified
+        });
+
+        return new RegisterResponseDto()
+        {
+            PhoneNumber = member.PhoneNumber ?? string.Empty
         };
     }
 }

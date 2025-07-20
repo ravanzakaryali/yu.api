@@ -6,11 +6,8 @@ internal class LoginCommandHandler(IYuDbContext dbContext, IUnitOfWorkService un
 {
     public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        User? user = await dbContext.Users
-                    .Where(m => m.PhoneNumber == request.PhoneNumber)
-                    .FirstOrDefaultAsync(cancellationToken: cancellationToken);
-
-        if (user == null)
+        Member? member = await dbContext.Members.Where(m => m.PhoneNumber == request.PhoneNumber).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        if (member == null)
         {
             return new LoginResponseDto()
             {
@@ -19,43 +16,49 @@ internal class LoginCommandHandler(IYuDbContext dbContext, IUnitOfWorkService un
             };
         }
 
-        if (user.CreatedConfirmCodeDate.HasValue && DateTime.UtcNow > user.CreatedConfirmCodeDate.Value.AddHours(4))
+        TimeSpan expireTimeSpan = member.ConfirmCodeCount switch
         {
-            user.ConfirmCodeCount = 0;
+            0 => TimeSpan.FromMinutes(1),
+            1 => TimeSpan.FromMinutes(3),
+            2 => TimeSpan.FromMinutes(10),
+            3 => TimeSpan.FromMinutes(30),
+            4 => TimeSpan.FromHours(1),
+            _ => TimeSpan.FromHours(1) // 4-dən çox olduqda maksimum müddət
+        };
+
+        if (member.ConfirmCodeGeneratedDate.HasValue && DateTime.UtcNow > member.ConfirmCodeGeneratedDate.Value.Add(expireTimeSpan))
+        {
+            member.ConfirmCodeCount = 0;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        int second = user.ConfirmCodeCount * 5 * 60;
-
-        if (user.ConfirmCodeCount == 1)
+        int remainingSeconds = 0;
+        if (member.ConfirmCodeGeneratedDate.HasValue)
         {
-            second = 1 * 60;
+            var expireDate = member.ConfirmCodeGeneratedDate.Value.Add(expireTimeSpan);
+            var timeUntilExpire = expireDate - DateTime.UtcNow;
+
+            if (timeUntilExpire.TotalSeconds > 0)
+                remainingSeconds = (int)timeUntilExpire.TotalSeconds;
         }
 
-        if (user.ConfirmCodeCount == 6)
-        {
-            second = 60 * 60;
-        }
-
-        if (user.CreatedConfirmCodeDate.HasValue && DateTime.UtcNow < user.CreatedConfirmCodeDate.Value.AddSeconds(second))
-        {
-            throw new AlreadyExistsException($"Zəhmət olmasa {second / 60} dəqiqə gözləyin. Təsdiqləmə kodu hələ də etibarlıdır.");
-        }
+        if (remainingSeconds > 0)
+            throw new AlreadyExistsException($"Zəhmət olmasa [[{remainingSeconds}]] gözləyin. Təsdiqləmə kodu hələ də etibarlıdır.");
 
         string randomNumber = unitOfWorkService.TokenService.GenerateVerificationCode(6);
-
-        // send confirmation code to user number
-
-        user.ConfirmCode = randomNumber;
-        user.ConfirmCodeCount++;
-        user.CreatedConfirmCodeDate = DateTime.UtcNow;
-
+        // int controlId = dbContext.Users.OrderByDescending(u => u.ControlId).FirstOrDefault()?.ControlId ?? 250;
+        // await _unitOfWork.SmsService.TrySendSmsMessageAsync(member.PhoneNumber, controlId + 1, randomNumber);
+        member.ConfirmCode = "111111";
+        // member.ControlId = controlId + 1;
+        member.ConfirmCodeCount++;
+        member.ConfirmCodeGeneratedDate = DateTime.UtcNow;
         await dbContext.SaveChangesAsync(cancellationToken);
         return new LoginResponseDto()
         {
             IsRegistered = true,
-            Count = user.ConfirmCodeCount,
-            PhoneNumber = user.PhoneNumber!,
+            Count = member.ConfirmCodeCount,
+            PhoneNumber = member.PhoneNumber ?? string.Empty,
+            TimeSeconds = remainingSeconds
         };
     }
 }

@@ -7,20 +7,33 @@ internal class ConfirmCodeCommandHandler(IYuDbContext dbContext, IHttpContextAcc
 {
     public async Task<GetUserResponseDto> Handle(ConfirmCodeCommand request, CancellationToken cancellationToken)
     {
-        Member? member = await dbContext.Members
-            .Where(x => x.PhoneNumber == request.PhoneNumber)
-            .FirstOrDefaultAsync(cancellationToken: cancellationToken)
-            ?? throw new UnauthorizedAccessException(nameof(Member));
+        Member member = await dbContext.Members.Where(m => m.PhoneNumber == request.PhoneNumber).FirstOrDefaultAsync(cancellationToken: cancellationToken)
+            ?? throw new NotFoundException(nameof(Member), request.PhoneNumber);
 
-        if (member.CreatedConfirmCodeDate.HasValue && DateTime.UtcNow > member.CreatedConfirmCodeDate.Value.AddHours(4).AddMinutes(15)) throw new UnauthorizedAccessException("Confirm code exp date");
+        TimeSpan expireTimeSpan = member.ConfirmCodeCount switch
+        {
+            0 => TimeSpan.FromMinutes(1),
+            1 => TimeSpan.FromMinutes(3),
+            2 => TimeSpan.FromMinutes(10),
+            3 => TimeSpan.FromMinutes(30),
+            4 => TimeSpan.FromHours(1),
+            _ => TimeSpan.FromHours(1)
+        };
+
+        Console.WriteLine(DateTime.UtcNow);
+        Console.WriteLine(member.ConfirmCodeGeneratedDate);
+        if (member.ConfirmCodeGeneratedDate.HasValue && DateTime.UtcNow > member.ConfirmCodeGeneratedDate.Value.Add(expireTimeSpan))
+            throw new Exception("Confirm code exp date");
+
+
 
         member.PhoneNumberConfirmed = true;
         member.ConfirmCode = null;
-        member.CreatedConfirmCodeDate = null;
         member.LastLoginDate = DateTime.UtcNow;
 
-        TokenDto token = await unitOfWorkService.TokenService.GenerateTokenAsync(member);
 
+        TokenDto token = await unitOfWorkService.TokenService.GenerateTokenAsync(member);
+        // string refreshToken = unitOfWorkService.TokenService.GenerateRefreshToken();
         await dbContext.SaveChangesAsync(cancellationToken);
 
         contextAccessor.HttpContext?.Response.Cookies.Append("token", token.AccessToken, new CookieOptions
@@ -31,13 +44,9 @@ internal class ConfirmCodeCommandHandler(IYuDbContext dbContext, IHttpContextAcc
             SameSite = SameSiteMode.Unspecified
         });
 
-        IList<string> roles = await unitOfWorkService.RoleService.GetRolesByUser(member);
-
         return new GetUserResponseDto()
         {
-            FullName = member.FullName,
-            PhoneNumber = member.PhoneNumber!,
-            Roles = roles,
+            PhoneNumber = member.PhoneNumber ?? string.Empty
         };
     }
 }
