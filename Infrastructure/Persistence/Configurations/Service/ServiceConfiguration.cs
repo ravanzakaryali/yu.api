@@ -10,6 +10,16 @@ public class ServiceConfiguration : IEntityTypeConfiguration<Service>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(s => s.TagTextColor)
+            .IsRequired()
+            .HasMaxLength(50)
+            .HasDefaultValue("#000000");
+        
+        builder.Property(s => s.TagBackgroundColor)
+            .IsRequired()
+            .HasMaxLength(50)
+            .HasDefaultValue("#000000");
+
         builder.Property(s => s.SubTitle)
             .IsRequired()
             .HasMaxLength(200);

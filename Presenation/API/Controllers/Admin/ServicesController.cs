@@ -9,8 +9,10 @@ public class ServicesController : BaseAdminApiController
     public async Task<IActionResult> CreateService([FromBody] ServiceRequestDto request)
           => Ok(await Mediator.Send(new CreateServiceCommand(
                                           request.Title,
+                                          request.Tag,
                                           request.SubTitle,
-                                          request.Desciption,
+                                          request.TagTextColor,
+                                          request.TagBackgroundColor,
                                           request.ServiceType,
                                           request.ImageIds)));
 
