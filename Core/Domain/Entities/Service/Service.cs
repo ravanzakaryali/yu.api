@@ -9,7 +9,7 @@ public class Service : BaseAuditableEntity
     }
     public string Title { get; set; } = null!;
     public string SubTitle { get; set; } = null!;
-    public string Desciption { get; set; } = null!;
+    public string Tag { get; set; } = null!;
     public int EstimatedDays { get; set; }
     public ServiceType ServiceType { get; set; }
     public ICollection<File> Images { get; set; }

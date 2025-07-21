@@ -1,6 +1,6 @@
 namespace Yu.Application.Handlers;
 
-public record CreateServiceCommand(string Title, string SubTitle, string Desciption, ServiceType ServiceType, List<int> ImagesIds) :
+public record CreateServiceCommand(string Title, string Tag, string SubTitle, ServiceType ServiceType, List<int> ImagesIds) :
     IRequest<ServiceResponseDto>;
 
 public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandler<CreateServiceCommand, ServiceResponseDto>
@@ -15,9 +15,9 @@ public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandl
         EntityEntry<Service> serviceEntry = dbContext.Services.Add(new Service
         {
             Title = request.Title,
-            SubTitle = request.SubTitle,
+            Tag = request.Tag,
             ServiceType = request.ServiceType,
-            Desciption = request.Desciption,
+            SubTitle = request.SubTitle,
             Images = files
         });
 
@@ -27,7 +27,7 @@ public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandl
             Id = serviceEntry.Entity.Id,
             Title = request.Title,
             Tag = request.SubTitle,
-            SubTitle = request.Desciption,
+            SubTitle = request.SubTitle,
             Images = [.. files.Select(x => new AssetResponseDto
             {
                 FileName = x.Name,

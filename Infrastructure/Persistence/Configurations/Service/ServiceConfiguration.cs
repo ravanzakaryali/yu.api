@@ -14,9 +14,9 @@ public class ServiceConfiguration : IEntityTypeConfiguration<Service>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(s => s.Desciption)
+        builder.Property(s => s.Tag)
             .IsRequired()
-            .HasMaxLength(500);
+            .HasMaxLength(50);
 
         builder.Property(s => s.ServiceType)
             .HasConversion(new EnumToStringConverter<ServiceType>())
