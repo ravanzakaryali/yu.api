@@ -12,6 +12,8 @@ internal class GetAllServicesQueryHandler(IYuDbContext dbContext) : IRequestHand
             {
                 Id = s.Id,
                 Title = s.Title,
+                TagTextColor = s.TagTextColor,
+                TagBackgroundColor = s.TagBackgroundColor,
                 SubTitle = s.SubTitle,
                 Tag = s.Tag,
                 ServiceType = s.ServiceType,

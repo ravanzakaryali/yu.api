@@ -2,8 +2,6 @@ namespace Yu.API.Controllers;
 
 public class ServicesController : BaseApiController
 {
-
-    
     [Authorize]
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ServiceResponseDto>), StatusCodes.Status200OK)]
