@@ -10,6 +10,7 @@ public class ServicesController : BaseAdminApiController
           => Ok(await Mediator.Send(new CreateServiceCommand(
                                           request.Title,
                                           request.Tag,
+                                          request.IconId,
                                           request.SubTitle,
                                           request.TagTextColor,
                                           request.TagBackgroundColor,

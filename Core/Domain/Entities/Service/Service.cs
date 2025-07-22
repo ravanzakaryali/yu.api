@@ -12,6 +12,8 @@ public class Service : BaseAuditableEntity
     public string Tag { get; set; } = null!;
     public string TagTextColor { get; set; } = null!;
     public string TagBackgroundColor { get; set; } = null!;
+    public int? IconId { get; set; }
+    public File? Icon { get; set; }
     public int EstimatedDays { get; set; }
     public ServiceType ServiceType { get; set; }
     public ICollection<File> Images { get; set; }

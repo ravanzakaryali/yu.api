@@ -1,6 +1,6 @@
 namespace Yu.Application.Handlers;
 
-public record CreateServiceCommand(string Title, string Tag, string SubTitle,string TagTextColor, string TagBackgroundColor, ServiceType ServiceType, List<int> ImagesIds) :
+public record CreateServiceCommand(string Title, string Tag, int IconId, string SubTitle,string TagTextColor, string TagBackgroundColor, ServiceType ServiceType, List<int> ImagesIds) :
     IRequest<ServiceResponseDto>;
 
 public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandler<CreateServiceCommand, ServiceResponseDto>
@@ -16,6 +16,7 @@ public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandl
         {
             Title = request.Title,
             Tag = request.Tag,
+            IconId = request.IconId,
             TagTextColor = request.TagTextColor,
             TagBackgroundColor = request.TagBackgroundColor,
             ServiceType = request.ServiceType,
@@ -28,7 +29,8 @@ public class CreateServiceCommandHandler(IYuDbContext dbContext) : IRequestHandl
         {
             Id = serviceEntry.Entity.Id,
             Title = request.Title,
-            Tag = request.SubTitle,
+            IconPath = files.FirstOrDefault(x => x.Id == request.IconId)?.Path ?? string.Empty,
+            Tag = request.Tag,
             TagTextColor = request.TagTextColor,
             TagBackgroundColor = request.TagBackgroundColor,
             SubTitle = request.SubTitle,

@@ -5,6 +5,7 @@ public class File : BaseAuditableEntity
     public File()
     {
         Services = new HashSet<Service>();
+        IconServices = new HashSet<Service>();
         OrderImages = new HashSet<OrderImage>();
     }
     public string Name { get; set; } = null!;
@@ -13,5 +14,6 @@ public class File : BaseAuditableEntity
     public double Size { get; set; }
     public string? Extension { get; set; }
     public ICollection<Service> Services { get; set; }
+    public ICollection<Service> IconServices { get; set; }
     public ICollection<OrderImage> OrderImages { get; set; }
 }

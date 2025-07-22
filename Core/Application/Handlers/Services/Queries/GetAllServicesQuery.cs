@@ -8,11 +8,13 @@ internal class GetAllServicesQueryHandler(IYuDbContext dbContext) : IRequestHand
     {
         return await dbContext.Services
             .Include(s => s.Images)
+            .Include(s => s.Icon)
             .Select(s => new ServiceResponseDto
             {
                 Id = s.Id,
                 Title = s.Title,
                 TagTextColor = s.TagTextColor,
+                IconPath = s.Icon!.Path,
                 TagBackgroundColor = s.TagBackgroundColor,
                 SubTitle = s.SubTitle,
                 Tag = s.Tag,

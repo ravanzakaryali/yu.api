@@ -28,6 +28,11 @@ public class ServiceConfiguration : IEntityTypeConfiguration<Service>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.HasOne(s => s.Icon)
+            .WithMany(f => f.IconServices)
+            .HasForeignKey(s => s.IconId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(s => s.ServiceType)
             .HasConversion(new EnumToStringConverter<ServiceType>())
             .HasDefaultValue(ServiceType.OnlyCount)
