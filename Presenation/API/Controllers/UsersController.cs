@@ -45,7 +45,7 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestDto request)
         => Ok(await Mediator.Send(new UpdateUserCommand(request.Email, request.FullName)));
 
-    [HttpGet("active-orders")]
+    [HttpGet("orders/active")]
     [Authorize]
     [ProducesResponseType(typeof(IEnumerable<ActiveOrderResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUserActiveOrders()
