@@ -1,7 +1,7 @@
 namespace Yu.API.Controllers.Admin;
 
 [ApiController, Route("api/admin/[controller]")]
-public class OrdersController : BaseOrdersController
+public class OrdersController : BaseAdminApiController
 {
     [HttpGet]
     [Authorize]

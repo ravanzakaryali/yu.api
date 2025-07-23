@@ -11,17 +11,23 @@ internal class GetUserActiveOrdersQueryHandler(IYuDbContext dbContext, ICurrentU
         if (string.IsNullOrEmpty(userId))
             throw new AutheticationException("User not authenticated");
 
-        List<ActiveOrderResponseDto> activeOrders = await dbContext.Orders
+        var activeOrders = await dbContext.Orders
             .Include(o => o.Services)
                 .ThenInclude(os => os.Service)
             .Where(o => o.MemberId == userId)
             .Where(o => !o.OrderStatusHistories.Any(osh => osh.OrderStatus == OrderStatus.Completed))
-            .Select(o => new ActiveOrderResponseDto
+
+            .ToListAsync(cancellationToken);
+
+        return activeOrders.Select(o =>
+        {
+            var latestStatus = o.OrderStatusHistories.OrderByDescending(osh => osh.CreatedDate).FirstOrDefault();
+            return new ActiveOrderResponseDto
             {
                 Id = o.Id,
                 OrderNumber = o.OrderNumber,
                 CreatedDate = o.CreatedDate,
-                OrderStatus = o.OrderStatusHistories.Last().OrderStatus,
+                OrderStatus = latestStatus != null ? latestStatus.OrderStatus : OrderStatus.PickUp,
                 MainDescription = o.Comment,
                 TotalPrice = o.TotalPrice,
                 Services = o.Services.Select(os => new ActiveOrderServiceResponseDto
@@ -29,9 +35,7 @@ internal class GetUserActiveOrdersQueryHandler(IYuDbContext dbContext, ICurrentU
                     ServiceName = os.Service.Title,
                     Count = os.Count
                 }).ToList()
-            })
-            .ToListAsync(cancellationToken);
-
-        return activeOrders;
+            };
+        });
     }
 }
