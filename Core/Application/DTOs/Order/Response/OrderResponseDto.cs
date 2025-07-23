@@ -9,6 +9,7 @@ public class OrderResponseDto
     public DateTime CreatedDate { get; set; }
     public string Comment { get; set; } = null!;
     public decimal TotalPrice { get; set; }
+    public Status SubStatus { get; set; }
     public OrderStatus OrderStatus { get; set; }
     public PaymentType PaymentType { get; set; }
 }

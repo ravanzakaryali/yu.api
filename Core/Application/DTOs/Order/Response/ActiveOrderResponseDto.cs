@@ -8,6 +8,7 @@ public class ActiveOrderResponseDto
     public string MainDescription { get; set; } = null!;
     public decimal TotalPrice { get; set; }
     public OrderStatus OrderStatus { get; set; }
+    public Status SubStatus { get; set; }
     public ICollection<ActiveOrderServiceResponseDto> Services { get; set; } = null!;
 }
 

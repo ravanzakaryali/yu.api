@@ -12,25 +12,29 @@ internal class GetClientOrdersQueryHandler(IYuDbContext dbContext) : IRequestHan
             .Include(o => o.OrderStatusHistories)
             .Where(o => o.MemberId == request.ClientId.ToString())
             .OrderByDescending(o => o.CreatedDate)
-            .Select(o => new OrderResponseDto
-            {
-                Id = o.Id,
-                OrderNumber = o.OrderNumber,
-                CreatedDate = o.CreatedDate,
-                Comment = o.Comment,
-                Address = o.Address.FullAddress,
-                PaymentType = PaymentType.Online,
-                TotalPrice = o.TotalPrice,
-                User = new UserDto
-                {
-                    FullName = o.Member.FullName,
-                    PhoneNumber = o.Member.PhoneNumber ?? string.Empty
-                },
-                OrderStatus = o.OrderStatusHistories.OrderByDescending(osh => osh.CreatedDate).FirstOrDefault() != null ?
-                    o.OrderStatusHistories.OrderByDescending(osh => osh.CreatedDate).First().OrderStatus : OrderStatus.PickUp,
-            })
+
             .ToListAsync(cancellationToken);
 
-        return orders;
+        return orders.Select(o =>
+            {
+                var latestStatus = o.OrderStatusHistories.OrderByDescending(osh => osh.CreatedDate).FirstOrDefault();
+                return new OrderResponseDto
+                {
+                    Id = o.Id,
+                    OrderNumber = o.OrderNumber,
+                    CreatedDate = o.CreatedDate,
+                    Comment = o.Comment,
+                    Address = o.Address.FullAddress,
+                    PaymentType = PaymentType.Online,
+                    TotalPrice = o.TotalPrice,
+                    User = new UserDto
+                    {
+                        FullName = o.Member.FullName,
+                        PhoneNumber = o.Member.PhoneNumber ?? string.Empty
+                    },
+                    OrderStatus = latestStatus != null ? latestStatus.OrderStatus : OrderStatus.PickUp,
+                    SubStatus = latestStatus != null ? latestStatus.SubStatus : Status.Pending,
+                };
+            });
     }
 }
