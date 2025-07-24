@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yu.Persistence;
 
@@ -11,9 +12,11 @@ using Yu.Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(YuDbContext))]
-    partial class YuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250724224449_Mig11")]
+    partial class Mig11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -805,10 +808,11 @@ namespace Persistence.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-                    b.Property<int?>("ServiceId")
+                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<string>("ServiceName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
@@ -825,8 +829,7 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ServiceId")
-                        .IsUnique()
-                        .HasFilter("[ServiceId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Prices");
                 });
@@ -1383,7 +1386,8 @@ namespace Persistence.Migrations
                     b.HasOne("Yu.Domain.Entities.Service", "Service")
                         .WithOne("Price")
                         .HasForeignKey("Yu.Domain.Entities.Price", "ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Service");
                 });

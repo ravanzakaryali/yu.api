@@ -15,11 +15,13 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var context = new ValidationContext<TRequest>(request);
-        List<ValidationFailure> failures = _validators
-            .Select(v => v.Validate(context))
-            .SelectMany(result => result.Errors)
-            .Where(f => f != null)
-            .ToList();
+        List<ValidationFailure> failures = new();
+
+        foreach (var validator in _validators)
+        {
+            var validationResult = await validator.ValidateAsync(context, cancellationToken);
+            failures.AddRange(validationResult.Errors);
+        }
 
         if (failures.Count != 0)
             throw new ValidationException("Validation error(s) occurred. See the 'errors' property for details.", failures);

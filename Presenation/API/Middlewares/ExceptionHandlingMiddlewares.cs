@@ -1,3 +1,5 @@
+using FluentValidation;
+
 namespace Yu.API.Middlewares;
 
 public class ExceptionHandling
@@ -28,6 +30,10 @@ public class ExceptionHandling
         catch (UnauthorizedAccessException ex)
         {
             ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, HttpStatusCode.Unauthorized);
+        }
+        catch (ValidationException ex)
+        {
+            ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, HttpStatusCode.BadRequest);
         }
         catch (Exception ex)
         {
