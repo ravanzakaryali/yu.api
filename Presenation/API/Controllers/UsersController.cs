@@ -17,25 +17,51 @@ public class UsersController : BaseApiController
         return NoContent();
     }
 
-    [HttpGet("address")]
+    [HttpGet("addresses")]
     [Authorize]
     [ProducesResponseType(typeof(IEnumerable<AddressResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUserAddresses()
         => Ok(await Mediator.Send(new GetUserAddressesQuery()));
 
-    [HttpPost("address")]
+    [HttpPost("addresses")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddAddress([FromBody] AddressRequestDto request)
     {
         await Mediator.Send(new CreateAddressCommand(
-                    request.FullAddress, 
-                    request.Street, 
-                    request.SubDoor, 
-                    request.Floor, 
-                    request.Apartment, 
-                    request.Intercom, 
+                    request.FullAddress,
+                    request.Street,
+                    request.SubDoor,
+                    request.Floor,
+                    request.Apartment,
+                    request.Intercom,
                     request.Comment));
+        return NoContent();
+    }
+
+    [HttpPut("addresses/{id}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateAddress([FromRoute] int id, [FromBody] UpdateAddressRequestDto request)
+    {
+        await Mediator.Send(new UpdateAddressCommand(
+                    id,
+                    request.FullAddress,
+                    request.Street,
+                    request.SubDoor,
+                    request.Floor,
+                    request.Apartment,
+                    request.Intercom,
+                    request.Comment));
+        return NoContent();
+    }
+
+    [HttpDelete("addresses/{id}")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteAddress([FromRoute] int id)
+    {
+        await Mediator.Send(new DeleteAddressCommand(id));
         return NoContent();
     }
 

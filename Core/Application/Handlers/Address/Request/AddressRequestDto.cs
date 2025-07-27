@@ -41,7 +41,7 @@ internal class GetUserAddressesQueryHandler(IYuDbContext yuDbContext, ICurrentUs
                 ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
         var addresses = await yuDbContext.Addresses
-            .Where(a => a.UserId == userId)
+            .Where(a => a.UserId == userId && !a.IsDeleted)
             .Select(a => new AddressResponseDto
             {
                 Id = a.Id,
