@@ -29,7 +29,7 @@ internal class GetUserActiveOrdersQueryHandler(IYuDbContext dbContext, ICurrentU
                 CreatedDate = o.CreatedDate,
                 OrderStatus = latestStatus != null ? latestStatus.OrderStatus : OrderStatus.PickUp,
                 SubStatus = latestStatus != null ? latestStatus.SubStatus : Status.Pending,
-                MainDescription = o.Comment,
+                Description = o.Comment,
                 TotalPrice = o.TotalPrice,
                 Services = o.Services.Select(os => new ActiveOrderServiceResponseDto
                 {

@@ -1,11 +1,11 @@
 namespace Yu.Application.Handlers;
 
-public record GetUserArchivedOrdersQuery() : IRequest<IEnumerable<OrderResponseDto>>;
+public record GetUserArchivedOrdersQuery() : IRequest<IEnumerable<ActiveOrderResponseDto>>;
 
 internal class GetUserArchivedOrdersQueryHandler(IYuDbContext dbContext, ICurrentUserService currentUserService)
-    : IRequestHandler<GetUserArchivedOrdersQuery, IEnumerable<OrderResponseDto>>
+    : IRequestHandler<GetUserArchivedOrdersQuery, IEnumerable<ActiveOrderResponseDto>>
 {
-    public async Task<IEnumerable<OrderResponseDto>> Handle(GetUserArchivedOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ActiveOrderResponseDto>> Handle(GetUserArchivedOrdersQuery request, CancellationToken cancellationToken)
     {
         string? userId = currentUserService.UserId;
         if (string.IsNullOrEmpty(userId))
@@ -13,6 +13,8 @@ internal class GetUserArchivedOrdersQueryHandler(IYuDbContext dbContext, ICurren
 
         var archivedOrders = await dbContext.Orders
             .Include(o => o.Address)
+            .Include(o => o.Services)
+                .ThenInclude(os => os.Service)
             .Include(o => o.Member)
             .Include(o => o.OrderStatusHistories)
             .Where(o => o.MemberId == userId)
@@ -22,23 +24,21 @@ internal class GetUserArchivedOrdersQueryHandler(IYuDbContext dbContext, ICurren
         return archivedOrders.Select(o =>
         {
             var latestStatus = o.OrderStatusHistories.OrderByDescending(osh => osh.CreatedDate).FirstOrDefault();
-            return new OrderResponseDto
+            return new ActiveOrderResponseDto
             {
                 Id = o.Id,
                 OrderNumber = o.OrderNumber,
                 CreatedDate = o.CreatedDate,
-                Comment = o.Comment,
-                Address = o.Address.FullAddress,
-                PaymentType = PaymentType.Online,
+                Description = o.Comment,
                 TotalPrice = o.TotalPrice,
-                User = new UserDto
-                {
-                    FullName = o.Member.FullName,
-                    PhoneNumber = o.Member.PhoneNumber ?? string.Empty
-                },
-                OrderStatus = latestStatus != null ? latestStatus.OrderStatus : OrderStatus.PickUp,
+                OrderStatus = latestStatus != null ? latestStatus.OrderStatus : OrderStatus.Completed,
                 SubStatus = latestStatus != null ? latestStatus.SubStatus : Status.Pending,
+                Services = o.Services.Select(os => new ActiveOrderServiceResponseDto
+                {
+                    ServiceName = os.Service.Title,
+                    Count = os.Count
+                }).ToList()
             };
         });
     }
-} 
+}

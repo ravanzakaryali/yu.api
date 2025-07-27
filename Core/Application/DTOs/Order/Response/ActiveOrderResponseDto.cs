@@ -5,7 +5,7 @@ public class ActiveOrderResponseDto
     public int Id { get; set; }
     public string OrderNumber { get; set; } = null!;
     public DateTime CreatedDate { get; set; }
-    public string MainDescription { get; set; } = null!;
+    public string Description { get; set; } = null!;
     public decimal TotalPrice { get; set; }
     public OrderStatus OrderStatus { get; set; }
     public Status SubStatus { get; set; }
