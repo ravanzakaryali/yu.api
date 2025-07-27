@@ -16,12 +16,6 @@ public class UpdateAddressCommandValidation : AbstractValidator<UpdateAddressCom
             .MaximumLength(500)
             .WithMessage("Full address cannot be longer than 500 characters");
 
-        RuleFor(x => x.Street)
-            .NotEmpty()
-            .WithMessage("Street cannot be empty")
-            .MaximumLength(200)
-            .WithMessage("Street cannot be longer than 200 characters");
-
         RuleFor(x => x.SubDoor)
             .NotEmpty()
             .WithMessage("Sub door cannot be empty")

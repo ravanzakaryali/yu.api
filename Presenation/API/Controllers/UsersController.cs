@@ -30,7 +30,6 @@ public class UsersController : BaseApiController
     {
         await Mediator.Send(new CreateAddressCommand(
                     request.FullAddress,
-                    request.Street,
                     request.SubDoor,
                     request.Floor,
                     request.Apartment,
@@ -47,7 +46,6 @@ public class UsersController : BaseApiController
         await Mediator.Send(new UpdateAddressCommand(
                     id,
                     request.FullAddress,
-                    request.Street,
                     request.SubDoor,
                     request.Floor,
                     request.Apartment,

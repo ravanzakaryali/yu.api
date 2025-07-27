@@ -1,7 +1,7 @@
 
 namespace Yu.Application.DTOs;
 
-public record CreateAddressCommand(string FullAddress, string Street, string SubDoor, string Floor, string Apartment, string Intercom, string Comment) : IRequest;
+public record CreateAddressCommand(string FullAddress, string SubDoor, string Floor, string Apartment, string Intercom, string Comment) : IRequest;
 
 internal class CreateAddressCommandHandler(IYuDbContext yuDbContext, ICurrentUserService currentUserService) : IRequestHandler<CreateAddressCommand>
 {
@@ -18,7 +18,6 @@ internal class CreateAddressCommandHandler(IYuDbContext yuDbContext, ICurrentUse
         member.Addresses.Add(new Address
         {
             FullAddress = request.FullAddress,
-            Street = request.Street,
             SubDoor = request.SubDoor,
             Floor = request.Floor,
             Apartment = request.Apartment,
@@ -46,7 +45,6 @@ internal class GetUserAddressesQueryHandler(IYuDbContext yuDbContext, ICurrentUs
             {
                 Id = a.Id,
                 FullAddress = a.FullAddress,
-                Street = a.Street,
                 SubDoor = a.SubDoor,
                 Floor = a.Floor,
                 Apartment = a.Apartment,

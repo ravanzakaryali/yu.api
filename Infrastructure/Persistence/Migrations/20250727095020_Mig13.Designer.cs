@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Yu.Persistence;
 
@@ -11,9 +12,11 @@ using Yu.Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(YuDbContext))]
-    partial class YuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250727095020_Mig13")]
+    partial class Mig13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

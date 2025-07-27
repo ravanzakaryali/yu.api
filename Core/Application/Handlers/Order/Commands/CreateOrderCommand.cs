@@ -22,7 +22,6 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
             Address = new Address
             {
                 FullAddress = request.Address.FullAddress,
-                Street = request.Address.Street,
                 SubDoor = request.Address.SubDoor,
                 Floor = request.Address.Floor,
                 Apartment = request.Address.Apartment,

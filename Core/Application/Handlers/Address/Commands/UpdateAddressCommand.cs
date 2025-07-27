@@ -1,6 +1,6 @@
 namespace Yu.Application.Handlers;
 
-public record UpdateAddressCommand(int Id, string FullAddress, string Street, string SubDoor, string Floor, string Apartment, string Intercom, string Comment) : IRequest;
+public record UpdateAddressCommand(int Id, string FullAddress, string SubDoor, string Floor, string Apartment, string Intercom, string Comment) : IRequest;
 
 internal class UpdateAddressCommandHandler(IYuDbContext yuDbContext, ICurrentUserService currentUserService) : IRequestHandler<UpdateAddressCommand>
 {
@@ -14,7 +14,6 @@ internal class UpdateAddressCommandHandler(IYuDbContext yuDbContext, ICurrentUse
                 ?? throw new NotFoundException(nameof(Address), request.Id);
 
         address.FullAddress = request.FullAddress;
-        address.Street = request.Street;
         address.SubDoor = request.SubDoor;
         address.Floor = request.Floor;
         address.Apartment = request.Apartment;
