@@ -10,5 +10,6 @@ public class AddressResponseDto
     public string Intercom { get; set; } = null!;
     public string Comment { get; set; } = null!;
     public string Country { get; set; } = null!;
+    public bool IsDefault { get; set; }
     public DateTime CreatedDate { get; set; }
 } 

@@ -63,6 +63,15 @@ public class UsersController : BaseApiController
         return NoContent();
     }
 
+    [HttpPatch("addresses/{id}/default")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> SetDefaultAddress([FromRoute] int id)
+    {
+        await Mediator.Send(new SetDefaultAddressCommand(id));
+        return NoContent();
+    }
+
     [HttpPatch]
     [Authorize]
     [ProducesResponseType(typeof(GetUserResponseDto), StatusCodes.Status200OK)]
