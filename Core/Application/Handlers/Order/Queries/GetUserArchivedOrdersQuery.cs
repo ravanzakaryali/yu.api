@@ -15,8 +15,8 @@ internal class GetUserArchivedOrdersQueryHandler(IYuDbContext dbContext, ICurren
             .Include(o => o.Address)
             .Include(o => o.Services)
                 .ThenInclude(os => os.Service)
-            .Include(o => o.Member)
             .Include(o => o.OrderStatusHistories)
+            .Where(o => o.OrderStatusHistories.Any(osh => osh.OrderStatus == OrderStatus.Completed))
             .Where(o => o.MemberId == userId)
             .OrderByDescending(o => o.CreatedDate)
             .ToListAsync(cancellationToken);
@@ -31,7 +31,7 @@ internal class GetUserArchivedOrdersQueryHandler(IYuDbContext dbContext, ICurren
                 CreatedDate = o.CreatedDate,
                 Description = o.Comment,
                 TotalPrice = o.TotalPrice,
-                OrderStatus = latestStatus != null ? latestStatus.OrderStatus : OrderStatus.Completed,
+                OrderStatus = latestStatus != null ? latestStatus.OrderStatus : OrderStatus.PickUp,
                 SubStatus = latestStatus != null ? latestStatus.SubStatus : Status.Pending,
                 Services = o.Services.Select(os => new ActiveOrderServiceResponseDto
                 {
