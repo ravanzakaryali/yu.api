@@ -84,4 +84,10 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> GetUserActiveOrders()
         => Ok(await Mediator.Send(new GetUserActiveOrdersQuery()));
 
+    [HttpGet("orders/archive")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<OrderResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserArchivedOrders()
+        => Ok(await Mediator.Send(new GetUserArchivedOrdersQuery()));
+
 }
