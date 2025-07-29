@@ -11,6 +11,13 @@ public class AssetsController : BaseApiController
         return Ok(await Mediator.Send(new AssetUploadCommand(request.File)));
     }
 
+    [HttpPost("multiple")]
+    [ProducesResponseType(typeof(MultipleAssetResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateMultipleAssetsAsync([FromForm] MultipleAssetRequestDto request)
+    {
+        return Ok(await Mediator.Send(new MultipleAssetUploadCommand(request.Files)));
+    }
+
     [HttpDelete("{assetId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAssetAsync([FromRoute] int assetId)
