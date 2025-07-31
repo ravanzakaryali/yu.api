@@ -38,4 +38,11 @@ public class OrdersController : BaseOrdersController
     {
         return Ok(await Mediator.Send(new GetPickupDateSettingsQuery()));
     }
+
+    [HttpPost("promocode-check")]
+    [ProducesResponseType(typeof(CheckPromoCodeResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CheckPromoCodeAsync([FromBody] CheckPromoCodeRequestDto request)
+    {
+        return Ok(await Mediator.Send(new CheckPromoCodeQuery(request.Code)));
+    }
 }
