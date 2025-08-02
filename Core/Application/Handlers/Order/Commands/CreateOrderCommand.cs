@@ -55,6 +55,7 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
             Order = order,
         })];
 
+
         foreach (var requestService in request.Services)
         {
             decimal price = 0;
@@ -94,35 +95,77 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
                 }).ToList() ?? []
             });
         }
-        // pickup date get bax eger 10 dan coxdursa sifaris o zaman get yeni pickup tarixinə keç əgər həmin həftədə yoxdursa 1 həftə sonra
 
-        // orders pickup date gətirməliyəm 
-        // daha sonra dayOfWeek ilə pickup sıralamam lazımdı
-        // sifariş verildiyi andan etibarən baxmalıyam ki, sifariş verildiyi günə yaxın pickup date varsa onu götürüm 
-        // əgər yoxdursa, 1 həftə sonra olanı götürüm
-        // əgər 10 dan çoxdursa, 1 həftə sonra olanı
-        // əgər 10 dan azdursa, həmin həftədə olanı götür
-        // copilot write the code for me this comments
-
-        List<PickupDateSetting> pickupDates = await dbContext.PickupDateSettings
+        // Algorithm to find the best pickup date
+        // Get all pickup date settings
+        List<PickupDateSetting> pickupDateSettings = await dbContext.PickupDateSettings
             .ToListAsync(cancellationToken);
 
-        if (pickupDates.Count == 0)
-            throw new NotFoundException("No pickup dates found for today");
+        if (pickupDateSettings.Count == 0)
+            throw new NotFoundException("No pickup date settings found");
 
-        // Get the next pickup date setting
-        PickupDateSetting? nextPickupDate = pickupDates
-            .Where(p => (int)p.DayOfWeek == (int)DateTime.UtcNow.DayOfWeek)
-            .OrderBy(p => p.StartTime)
-            .FirstOrDefault();
+        // Get current date and time
+        DateTime currentDateTime = DateTime.UtcNow;
+        DateTime currentDate = currentDateTime.Date;
 
-        nextPickupDate ??= pickupDates.FirstOrDefault(p => (int)p.DayOfWeek == (int)DateTime.UtcNow.AddDays(7).DayOfWeek);
-        
-        if (nextPickupDate is null)
-            throw new NotFoundException("No pickup date found for next week");
-        order.PickupDate = DateTime.UtcNow.Date.Add(nextPickupDate.StartTime.ToTimeSpan());
-        order.PickupDateSetting = nextPickupDate;
-        order.PickupDateSettingId = nextPickupDate.Id;
+        // Find the best pickup date
+        PickupDateSetting? bestPickupDate = null;
+        DateTime? bestPickupDateTime = null;
+
+        // Simple approach: Get all pickup settings and find the first available one
+        var allPickupSettings = pickupDateSettings.OrderBy(p => p.DayOfWeek).ThenBy(p => p.StartTime).ToList();
+
+        // For debugging, let's first try to find ANY pickup setting for today
+        var todaySettings = allPickupSettings.Where(p => p.DayOfWeek == currentDate.DayOfWeek).ToList();
+
+        if (todaySettings.Count > 0)
+        {
+            // Take the first available setting for today
+            var firstTodaySetting = todaySettings.First();
+            DateTime pickupDateTime = currentDate.Add(firstTodaySetting.StartTime.ToTimeSpan());
+
+            // Only skip if the time has already passed
+            if (pickupDateTime > currentDateTime)
+            {
+                bestPickupDate = firstTodaySetting;
+                bestPickupDateTime = pickupDateTime;
+            }
+        }
+
+        // If no pickup for today, look for the next available one
+        if (bestPickupDate == null)
+        {
+            // Look for pickup dates starting from tomorrow and going forward for 4 weeks
+            for (int dayOffset = 1; dayOffset <= 28; dayOffset++) // Start from tomorrow
+            {
+                DateTime targetDate = currentDate.AddDays(dayOffset);
+                DayOfWeek targetDayOfWeek = targetDate.DayOfWeek;
+
+                // Find pickup settings for this day of week
+                var dayPickupSettings = allPickupSettings
+                    .Where(p => p.DayOfWeek == targetDayOfWeek)
+                    .OrderBy(p => p.StartTime)
+                    .ToList();
+
+                if (dayPickupSettings.Count > 0)
+                {
+                    // Take the first available setting for this day
+                    var firstSetting = dayPickupSettings.First();
+                    DateTime pickupDateTime = targetDate.Add(firstSetting.StartTime.ToTimeSpan());
+
+                    bestPickupDate = firstSetting;
+                    bestPickupDateTime = pickupDateTime;
+                    break;
+                }
+            }
+        }
+
+        if (bestPickupDate == null || bestPickupDateTime == null)
+            throw new NotFoundException($"No available pickup date found within the next 4 weeks. Total settings: {pickupDateSettings.Count}");
+
+        order.PickupDate = bestPickupDateTime.Value;
+        order.PickupDateSetting = bestPickupDate;
+        order.PickupDateSettingId = bestPickupDate.Id;
 
         order.OrderStatusHistories.Add(new OrderStatusHistory
         {
