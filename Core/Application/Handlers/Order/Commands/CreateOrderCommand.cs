@@ -15,7 +15,7 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
 
 
         // check promo code
-        
+
         Order order = new()
         {
             Comment = request.Comment,
@@ -105,7 +105,6 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
         // copilot write the code for me this comments
 
         List<PickupDateSetting> pickupDates = await dbContext.PickupDateSettings
-            .Where(p => p.DayOfWeek.ToString() == DateTime.UtcNow.DayOfWeek.ToString())
             .ToListAsync(cancellationToken);
 
         if (pickupDates.Count == 0)
@@ -113,17 +112,12 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
 
         // Get the next pickup date setting
         PickupDateSetting? nextPickupDate = pickupDates
+            .Where(p => (int)p.DayOfWeek == (int)DateTime.UtcNow.DayOfWeek)
             .OrderBy(p => p.StartTime)
-            .FirstOrDefault(p => p.StartTime > TimeOnly.FromDateTime(DateTime.UtcNow));
+            .FirstOrDefault();
 
-        if (nextPickupDate is null)
-        {
-            // If no pickup date is found for today, get the next available pickup date in the next week
-            nextPickupDate = await dbContext.PickupDateSettings
-                .Where(p => p.DayOfWeek.ToString() == DateTime.UtcNow.AddDays(7).DayOfWeek.ToString())
-                .OrderBy(p => p.StartTime)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
+        nextPickupDate ??= pickupDates.FirstOrDefault(p => (int)p.DayOfWeek == (int)DateTime.UtcNow.AddDays(7).DayOfWeek);
+        
         if (nextPickupDate is null)
             throw new NotFoundException("No pickup date found for next week");
         order.PickupDate = DateTime.UtcNow.Date.Add(nextPickupDate.StartTime.ToTimeSpan());
