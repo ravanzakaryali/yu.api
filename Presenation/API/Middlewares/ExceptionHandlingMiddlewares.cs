@@ -33,7 +33,8 @@ public class ExceptionHandling
         }
         catch (ValidationException ex)
         {
-            ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, HttpStatusCode.BadRequest);
+            string validationErrors = string.Join(", ", ex.Errors.Select(e => e.ErrorMessage));
+            ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, HttpStatusCode.BadRequest, validationErrors: validationErrors);
         }
         catch (Exception ex)
         {
@@ -42,14 +43,15 @@ public class ExceptionHandling
             _logger.LogError(ex, $"Request {httpContext.Request?.Method}: {httpContext.Request?.Path.Value} failed Error: {@error}", error);
         }
     }
-    private async Task<ErrorResponseDto> HandleExceptionAsync(HttpContext context, Exception exception, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, string? message = null)
+    private async Task<ErrorResponseDto> HandleExceptionAsync(HttpContext context, Exception exception, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, string? message = null, string? validationErrors = null)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)statusCode;
         ErrorResponseDto response = new()
         {
             Message = message ?? exception.Message,
-            StatusCode = (int)statusCode
+            StatusCode = (int)statusCode,
+            Errors = validationErrors
         };
         string json = JsonConvert.SerializeObject(response, new JsonSerializerSettings()
         {

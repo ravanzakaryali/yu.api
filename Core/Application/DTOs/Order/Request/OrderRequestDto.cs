@@ -6,6 +6,7 @@ public class OrderRequestDto
     public ICollection<int> Files { get; set; } = null!;
     public AddressRequestDto Address { get; set; } = null!;
     public ICollection<OrderServiceDto> Services { get; set; } = null!;
+    public int? PromoCodeId { get; set; }
 }
 
 public class OrderServiceDto

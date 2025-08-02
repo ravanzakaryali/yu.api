@@ -1,6 +1,6 @@
 namespace Yu.Application.Handlers;
 
-public record CreateOrderCommand(string Comment, ICollection<int> Files, AddressRequestDto Address, ICollection<OrderServiceDto> Services) : IRequest<OrderResponseDto>;
+public record CreateOrderCommand(string Comment, ICollection<int> Files, AddressRequestDto Address, ICollection<OrderServiceDto> Services, int? PromoCodeId) : IRequest<OrderResponseDto>;
 
 internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserService currentUserService) : IRequestHandler<CreateOrderCommand, OrderResponseDto>
 {
@@ -13,11 +13,15 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
             .FirstOrDefaultAsync(m => m.Id == currentUserService.UserId, cancellationToken)
             ?? throw new UnauthorizedAccessException("User not found");
 
+
+        // check promo code
+        
         Order order = new()
         {
             Comment = request.Comment,
             PickupDate = DateTime.UtcNow,
             Discount = 0,
+            PromoCodeId = request.PromoCodeId,
             MemberId = member.Id,
             Address = new Address
             {
@@ -101,7 +105,7 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
         // copilot write the code for me this comments
 
         List<PickupDateSetting> pickupDates = await dbContext.PickupDateSettings
-            .Where(p => p.DayOfWeek == DateTime.UtcNow.DayOfWeek)
+            .Where(p => p.DayOfWeek.ToString() == DateTime.UtcNow.DayOfWeek.ToString())
             .ToListAsync(cancellationToken);
 
         if (pickupDates.Count == 0)
@@ -111,12 +115,12 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
         PickupDateSetting? nextPickupDate = pickupDates
             .OrderBy(p => p.StartTime)
             .FirstOrDefault(p => p.StartTime > TimeOnly.FromDateTime(DateTime.UtcNow));
-        
+
         if (nextPickupDate is null)
         {
             // If no pickup date is found for today, get the next available pickup date in the next week
             nextPickupDate = await dbContext.PickupDateSettings
-                .Where(p => p.DayOfWeek == DateTime.UtcNow.AddDays(7).DayOfWeek)
+                .Where(p => p.DayOfWeek.ToString() == DateTime.UtcNow.AddDays(7).DayOfWeek.ToString())
                 .OrderBy(p => p.StartTime)
                 .FirstOrDefaultAsync(cancellationToken);
         }
@@ -138,7 +142,7 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
         await dbContext.Orders.AddAsync(order, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        order.OrderNumber += "-"+ order.Id.ToString("D6");
+        order.OrderNumber += "-" + order.Id.ToString("D6");
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

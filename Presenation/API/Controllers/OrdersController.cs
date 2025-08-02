@@ -12,7 +12,7 @@ public class OrdersController : BaseOrdersController
     [ProducesResponseType(typeof(OrderResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> CreateOrderAsync([FromBody] OrderRequestDto request)
     {
-        return Ok(await Mediator.Send(new CreateOrderCommand(request.Comment, request.Files, request.Address, request.Services)));
+        return Ok(await Mediator.Send(new CreateOrderCommand(request.Comment, request.Files, request.Address, request.Services, request.PromoCodeId)));
     }
 
     [HttpPost("{id}/cancel")]
