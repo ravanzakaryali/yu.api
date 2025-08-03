@@ -15,7 +15,7 @@ public class OrdersController : BaseOrdersController
         return Ok(await Mediator.Send(new CreateOrderCommand(request.Comment, request.Files, request.Address, request.Services, request.PromoCodeId)));
     }
 
-    [HttpPost("{id}/cancel")]
+    [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> CancelOrderAsync([FromRoute] int id, [FromBody] DeleteOrderRequestDto request)
     {

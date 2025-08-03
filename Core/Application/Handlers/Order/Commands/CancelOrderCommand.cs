@@ -10,7 +10,13 @@ internal class CancelOrderCommandHandler(IYuDbContext dbContext) : IRequestHandl
         Order order = await dbContext.Orders.FirstOrDefaultAsync(o => o.Id == request.OrderId, cancellationToken)
             ?? throw new NotFoundException(nameof(Order), request.OrderId);
 
+        order.CancelOrders.Add(new CancelOrder()
+        {
+            ReasonId = request.ReasonId,
+            OrderId = order.Id,
+        });
         
+        order.IsDeleted = true;
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }
