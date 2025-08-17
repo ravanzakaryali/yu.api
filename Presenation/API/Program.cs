@@ -15,7 +15,6 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins(
-                   "*",
                    "https://localhost:3000",
                    "http://localhost:3000",
                    "https://localhost:3001",
@@ -23,7 +22,9 @@ builder.Services.AddCors(options =>
                    "http://localhost:5173",
                    "http://localhost:5174",
                    "https://localhost:5173",
-                   "https://localhost:5174"
+                   "https://localhost:5174",
+                   "https://your-domain.com",
+                   "https://admin.your-domain.com"
                )
                .AllowAnyHeader()
                .AllowAnyMethod()
@@ -63,6 +64,11 @@ var app = builder.Build();
 // if (app.Environment.IsDevelopment())
 // {
 // }
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
+});
+
 app.UseCors();
 
 app.UseTokenAuthetication();
@@ -84,6 +90,5 @@ app.MapControllers();
 
 app.UseHttpsRedirection();
 app.UseExceptionHandling();
-app.UseTokenAuthetication();
 // app.Urls.Add("http://172.19.8.246:5040");
 app.Run();

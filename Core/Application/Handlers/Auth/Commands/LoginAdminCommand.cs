@@ -20,9 +20,9 @@ internal class LoginAdminCommandHandler(
 
         contextAccessor.HttpContext?.Response.Cookies.Append("token", token.AccessToken, new CookieOptions
         {
-            HttpOnly = false,
+            HttpOnly = true,
             Expires = token.Expires,
-            Secure = false,
+            Secure = true,
             SameSite = SameSiteMode.None
         });
 
