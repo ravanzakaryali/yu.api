@@ -1,6 +1,5 @@
 namespace Yu.API.Controllers.Admin;
 
-[Authorize]
 public class EmployeeController : BaseAdminApiController
 {
     [HttpGet]

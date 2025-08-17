@@ -23,7 +23,7 @@ internal class LoginAdminCommandHandler(
             HttpOnly = true,
             Expires = token.Expires,
             Secure = false,
-            SameSite = SameSiteMode.Unspecified
+            SameSite = SameSiteMode.None
         });
 
         return new LoginAdminResponseDto()

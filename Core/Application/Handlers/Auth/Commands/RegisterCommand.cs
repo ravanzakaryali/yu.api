@@ -42,7 +42,7 @@ public class RegisterCommandHandler(IYuDbContext dbContext, IUnitOfWorkService u
             HttpOnly = true,
             Expires = token.Expires,
             Secure = false,
-            SameSite = SameSiteMode.Unspecified
+            SameSite = SameSiteMode.None
         });
 
         return new RegisterResponseDto()
