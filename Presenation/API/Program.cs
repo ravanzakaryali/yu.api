@@ -23,8 +23,8 @@ builder.Services.AddCors(options =>
                    "http://localhost:5174",
                    "https://localhost:5173",
                    "https://localhost:5174",
-                   "https://your-domain.com",
-                   "https://admin.your-domain.com"
+                   "https://api.yuapp.az",
+                   "https://admin.yuapp.az"
                )
                .AllowAnyHeader()
                .AllowAnyMethod()
