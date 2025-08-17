@@ -67,7 +67,7 @@ public class PermissionEndpointFilter(IYuDbContext dbContext, IHttpContextAccess
             {
                 Expires = DateTime.Now.AddDays(-1),
                 HttpOnly = false,
-                SameSite = SameSiteMode.None,
+                SameSite = SameSiteMode.Unspecified,
                 Secure = true,
             });
 

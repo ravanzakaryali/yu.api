@@ -74,7 +74,7 @@ public class ChangeTokenAutheticationMiddlewares
                         {
                             Expires = newAccessToken.Expires.AddDays(7),
                             HttpOnly = false,
-                            SameSite = SameSiteMode.None,
+                            SameSite = SameSiteMode.Unspecified,
                             Secure = true,
                         });
                         //httpContext.Request.Cookies = new KeyValuePair<string,string>("token", newAccessToken.AccessToken);

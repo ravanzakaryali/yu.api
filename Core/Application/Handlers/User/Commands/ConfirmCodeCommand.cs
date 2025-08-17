@@ -41,7 +41,7 @@ internal class ConfirmCodeCommandHandler(IYuDbContext dbContext, IHttpContextAcc
             HttpOnly = true,
             Expires = token.Expires,
             Secure = false,
-            SameSite = SameSiteMode.None
+            SameSite = SameSiteMode.Unspecified
         });
 
         return new GetUserResponseDto()

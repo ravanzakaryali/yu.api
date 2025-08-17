@@ -18,7 +18,7 @@ internal class LogoutCommandHandler(
         {
             Expires = DateTime.Now.AddDays(-1),
             HttpOnly = true,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Unspecified,
             Secure = true
         });
     }
