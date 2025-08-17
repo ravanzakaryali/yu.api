@@ -7,5 +7,5 @@ public class AuthController : BaseAdminApiController
     [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> LoginMember([FromBody] LoginAdminRequestDto request)
         => Ok(await Mediator.Send(new LoginAdminCommand(request.Username, request.Password)));
-        
+
 }
