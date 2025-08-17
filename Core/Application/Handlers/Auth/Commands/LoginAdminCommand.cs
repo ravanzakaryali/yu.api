@@ -22,8 +22,8 @@ internal class LoginAdminCommandHandler(
         {
             HttpOnly = true,
             Expires = token.Expires,
-            Secure = true,
-            SameSite = SameSiteMode.None
+            Secure = false,
+            SameSite = SameSiteMode.Unspecified
         });
 
         return new LoginAdminResponseDto()
