@@ -76,6 +76,7 @@ public class ChangeTokenAutheticationMiddlewares
                             HttpOnly = true,
                             SameSite = SameSiteMode.None,
                             Secure = true,
+                            Path = "/"
                         });
                         //httpContext.Request.Cookies = new KeyValuePair<string,string>("token", newAccessToken.AccessToken);
 

@@ -20,12 +20,20 @@ public class PermissionEndpointFilter(IYuDbContext dbContext, IHttpContextAccess
 
         ControllerActionDescriptor? descriptor = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>();
 
+        // Allow anonymous endpoints to bypass permission checks (use ActionDescriptor metadata for reliability)
+        bool allowsAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>().Any();
+        if (allowsAnonymous)
+        {
+            await next();
+            return;
+        }
+
         string? pattern = descriptor?.AttributeRouteInfo?.Template;
         string httpMethod = descriptor?.ActionConstraints?.OfType<HttpMethodActionConstraint>().FirstOrDefault()?.HttpMethods.FirstOrDefault() ?? "GET";
 
-        bool? isAuth = descriptor?.EndpointMetadata.Any(c => c is AuthorizeAttribute);
+        bool? isAuth = context.ActionDescriptor.EndpointMetadata.OfType<AuthorizeAttribute>().Any();
 
-        var authorizeAttributes = descriptor?.EndpointMetadata.OfType<AuthorizeAttribute>().ToList();
+        var authorizeAttributes = context.ActionDescriptor.EndpointMetadata.OfType<AuthorizeAttribute>().ToList();
 
         List<string> endpointRoles = new();
 
@@ -65,10 +73,10 @@ public class PermissionEndpointFilter(IYuDbContext dbContext, IHttpContextAccess
 
             context.HttpContext.Response.Cookies.Append("token", "delete", new CookieOptions
             {
-                Expires = DateTime.Now.AddDays(-1),
-                HttpOnly = false,
+                Expires = DateTime.UtcNow.AddDays(-1),
+                HttpOnly = true,
                 SameSite = SameSiteMode.None,
-                Secure = false,
+                Secure = true,
             });
 
             await next();

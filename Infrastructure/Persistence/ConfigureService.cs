@@ -37,6 +37,19 @@ public static class ConfigureService
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("Jwt:SecurityKey").Value!)),
                 ClockSkew = TimeSpan.Zero,
             };
+
+            // Read JWT from cookie for cross-site requests
+            option.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    if (context.Request.Cookies.TryGetValue("token", out var token) && !string.IsNullOrWhiteSpace(token))
+                    {
+                        context.Token = token;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         services.AddScoped<EntitySaveChangesInterceptor>();
