@@ -20,10 +20,10 @@ internal class LoginAdminCommandHandler(
 
         contextAccessor.HttpContext?.Response.Cookies.Append("token", token.AccessToken, new CookieOptions
         {
-            HttpOnly = true,
+            HttpOnly = false,
             Expires = token.Expires,
-            Secure = true,
-            SameSite = SameSiteMode.Unspecified
+            Secure = false,
+            SameSite = SameSiteMode.None
         });
 
         return new LoginAdminResponseDto()
