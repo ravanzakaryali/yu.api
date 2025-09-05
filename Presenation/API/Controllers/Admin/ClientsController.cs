@@ -4,9 +4,9 @@ namespace Yu.API.Controllers.Admin;
 public class ClientController : BaseAdminApiController
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ClientResponseDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetClientsAsync()
-        => Ok(await Mediator.Send(new GetClientsQuery()));
+    [ProducesResponseType(typeof(PaginatedResponseDto<ClientResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetClientsAsync([FromQuery] GetClientsFilterRequestDto? filter)
+        => Ok(await Mediator.Send(new GetClientsQuery(filter)));
 
     [HttpGet("{id}/orders")]
     [ProducesResponseType(typeof(IEnumerable<OrderResponseDto>), StatusCodes.Status200OK)]
