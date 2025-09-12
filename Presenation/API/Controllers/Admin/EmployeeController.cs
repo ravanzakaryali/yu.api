@@ -3,9 +3,9 @@ namespace Yu.API.Controllers.Admin;
 public class EmployeeController : BaseAdminApiController
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<EmployeeResponseDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetEmployees()
-        => Ok(await Mediator.Send(new GetEmployeesQuery()));
+    [ProducesResponseType(typeof(PaginatedResponseDto<EmployeeResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEmployees([FromQuery] GetEmployeesFilterRequestDto? filter = null)
+        => Ok(await Mediator.Send(new GetEmployeesQuery(filter)));
 
     [HttpPost]
     [ProducesResponseType(typeof(AddEmployeeResponseDto), StatusCodes.Status200OK)]
