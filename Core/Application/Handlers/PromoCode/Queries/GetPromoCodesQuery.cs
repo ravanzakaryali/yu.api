@@ -11,6 +11,7 @@ internal class GetPromoCodesQueryHandler(IYuDbContext dbContext) : IRequestHandl
     public async Task<List<PromoCodeResponseDto>> Handle(GetPromoCodesQuery request, CancellationToken cancellationToken)
     {
         IQueryable<PromoCode> query = dbContext.PromoCodes
+                .Include(pc => pc.Orders)
                 .IgnoreQueryFilters()
                 .Where(pc => !pc.IsDeleted)
                 .AsQueryable();
@@ -27,15 +28,24 @@ internal class GetPromoCodesQueryHandler(IYuDbContext dbContext) : IRequestHandl
                 query = query.Where(pc => pc.Type == request.Filter.Type.Value);
             }
 
-            if (request.Filter.StartDate.HasValue)
+            // Date filtering logic
+            if (request.Filter.StartDate.HasValue && request.Filter.EndDate.HasValue)
             {
+                // Both dates provided - filter by date range
+                query = query.Where(pc => pc.StartDate >= request.Filter.StartDate.Value && 
+                                         pc.StartDate <= request.Filter.EndDate.Value);
+            }
+            else if (request.Filter.StartDate.HasValue)
+            {
+                // Only start date provided - from start date to now
                 query = query.Where(pc => pc.StartDate >= request.Filter.StartDate.Value);
             }
-
-            if (request.Filter.EndDate.HasValue)
+            else if (request.Filter.EndDate.HasValue)
             {
-                query = query.Where(pc => pc.EndDate <= request.Filter.EndDate.Value);
+                // Only end date provided - from beginning to end date
+                query = query.Where(pc => pc.StartDate <= request.Filter.EndDate.Value);
             }
+            // If no dates provided, show all records (no additional filtering)
         }
 
         List<PromoCodeResponseDto> promoCodes = await query
@@ -51,6 +61,7 @@ internal class GetPromoCodesQueryHandler(IYuDbContext dbContext) : IRequestHandl
                 EndDate = pc.EndDate,
                 IsActive = pc.IsActive,
                 CreatedDate = pc.CreatedDate,
+                OrdersCount = pc.Orders.Count()
             })
             .ToListAsync(cancellationToken);
 

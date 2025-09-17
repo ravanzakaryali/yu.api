@@ -16,4 +16,9 @@ public class EmployeeController : BaseAdminApiController
     [ProducesResponseType(typeof(EmployeeResponseDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateEmployee([FromBody] UpdateEmployeeRequestDto request)
         => Ok(await Mediator.Send(new UpdateEmployeeCommand(request.Id, request.FullName, request.Email)));
+
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(EmployeeDetailResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEmployeeDetail(string id)
+        => Ok(await Mediator.Send(new GetEmployeeDetailQuery(id)));
 }

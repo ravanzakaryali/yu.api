@@ -15,4 +15,10 @@ public class AuthController : BaseAdminApiController
     public async Task<IActionResult> GetMe()
         => Ok(await Mediator.Send(new GetMeQuery()));
 
+    [HttpPatch("me")]
+    [Authorize]
+    [ProducesResponseType(typeof(GetUserResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> EditAccount([FromBody] EditAccountRequestDto request)
+        => Ok(await Mediator.Send(new EditAccountCommand(request.FullName, request.Email)));
+
 }

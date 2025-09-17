@@ -21,6 +21,7 @@ global using Yu.API.Filters;
 global using Yu.API.Middlewares;
 global using Microsoft.OpenApi.Models;
 global using Microsoft.AspNetCore.HttpOverrides;
+global using ClosedXML.Excel;
 
 
 
