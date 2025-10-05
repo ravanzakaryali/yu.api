@@ -1,6 +1,5 @@
 namespace Yu.API.Controllers;
 
-[Authorize]
 public class ServicesController : BaseApiController
 {
     [HttpGet]
