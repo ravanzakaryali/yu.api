@@ -93,5 +93,5 @@ app.MapControllers();
 
 app.UseHttpsRedirection();
 app.UseExceptionHandling();
-app.Urls.Add("http://192.168.100.248:5040");
+// app.Urls.Add("http://192.168.100.248:5040");
 app.Run();
