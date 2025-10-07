@@ -34,6 +34,7 @@ public class ChangeTokenAutheticationMiddlewares
     }
     public async Task InvokeAsync(HttpContext httpContext, IUnitOfWorkService unitOfWork)
     {
+
         if (httpContext.Request.Cookies.TryGetValue("token", out string? token))
         {
             if (token != null)
@@ -90,8 +91,8 @@ public class ChangeTokenAutheticationMiddlewares
                         httpContext.Request.Headers.Remove("Authorization");
                         httpContext.Response.Headers.Remove("Authorization");
 
-                        httpContext.Request.Headers.Authorization = "Bearer " + token;
-                        httpContext.Response.Headers.Authorization = "Bearer " + token;
+                        httpContext.Request.Headers.Authorization = "Bearer " + newAccessToken.AccessToken;
+                        httpContext.Response.Headers.Authorization = "Bearer " + newAccessToken.AccessToken;
 
                         httpContext.User.AddIdentity(new ClaimsIdentity(claims));
                     }

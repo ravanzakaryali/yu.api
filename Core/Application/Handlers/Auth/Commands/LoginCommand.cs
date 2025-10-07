@@ -42,9 +42,8 @@ internal class LoginCommandHandler(IYuDbContext dbContext, IUnitOfWorkService un
                 remainingSeconds = (int)timeUntilExpire.TotalSeconds;
         }
 
-        if (remainingSeconds > 0)
-            throw new AlreadyExistsException($"Zəhmət olmasa [[{remainingSeconds}]] gözləyin. Təsdiqləmə kodu hələ də etibarlıdır.");
-
+        // if (remainingSeconds > 0)
+        //     throw new AlreadyExistsException($"Zəhmət olmasa [[{remainingSeconds}]] gözləyin. Təsdiqləmə kodu hələ də etibarlıdır.");
         string randomNumber = unitOfWorkService.TokenService.GenerateVerificationCode(6);
         // int controlId = dbContext.Users.OrderByDescending(u => u.ControlId).FirstOrDefault()?.ControlId ?? 250;
         // await _unitOfWork.SmsService.TrySendSmsMessageAsync(member.PhoneNumber, controlId + 1, randomNumber);
