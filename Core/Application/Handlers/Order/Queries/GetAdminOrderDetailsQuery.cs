@@ -42,7 +42,11 @@ internal class GetAdminOrderDetailsQueryHandler(IYuDbContext dbContext) : IReque
         {
             ServiceName = os.ServiceName,
             Count = os.Count,
-            ClothingItem = os.OrderClothingItems?.Select(oci => oci.ClothingItem.Name).ToList()
+            ClothingItem = os.OrderClothingItems?.Select(oci => new OrderDetailClothingItemResponseDto
+            {
+                Name = oci.ClothingItem.Name,
+                Count = oci.Count
+            }).ToList()
         })];
 
         OrderDetailsAdminResponseDto orderResponse = new()
