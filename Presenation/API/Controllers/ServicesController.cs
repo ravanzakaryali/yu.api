@@ -17,4 +17,12 @@ public class ServicesController : BaseApiController
     public async Task<IActionResult> GetClothinItems()
         => Ok(await Mediator.Send(new GetClothinItemsQuery()));
 
+    [HttpPost("price-calculate")]
+    [ProducesResponseType(typeof(OrderPriceCalculateResponseDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CalculatePrice([FromBody] OrderPriceCalculateRequestDto request)
+        => Ok(await Mediator.Send(new CalculatePriceCommand(request.Services)
+        {
+            PromoCodeId = request.PromoCodeId
+        }));
+
 }

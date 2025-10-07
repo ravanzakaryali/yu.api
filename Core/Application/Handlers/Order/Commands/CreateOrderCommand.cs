@@ -40,7 +40,9 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
             .Include(s => s.Price)
             .ToListAsync(cancellationToken);
 
-        List<ClothingItem> clothingItems = await dbContext.ClothingItems.ToListAsync(cancellationToken);
+        List<ClothingItem> clothingItems = await dbContext.ClothingItems
+            .Include(ci => ci.Price)
+            .ToListAsync(cancellationToken);
 
         List<Domain.Entities.File> files = await dbContext.Files
             .Where(f => request.Files.Contains(f.Id))
@@ -176,16 +178,20 @@ internal class CreateOrderCommandHandler(IYuDbContext dbContext, ICurrentUserSer
             Order = order
         });
 
-        await dbContext.Orders.AddAsync(order, cancellationToken);
+        var entity = await dbContext.Orders.AddAsync(order, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        order.OrderNumber += "-" + order.Id.ToString("D6");
-
+        order.OrderNumber = order.OrderNumber + "-" + entity?.Entity?.Id.ToString("D6");
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return new OrderResponseDto
         {
             Id = order.Id,
+            OrderNumber = order.OrderNumber,
+            Address = order.Address.FullAddress,
+            CreatedDate = order.CreatedDate,
+            Comment = order.Comment, 
+            TotalPrice = order.TotalPrice,
         };
     }
 }

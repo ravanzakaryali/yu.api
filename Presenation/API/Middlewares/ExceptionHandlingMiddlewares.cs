@@ -27,6 +27,14 @@ public class ExceptionHandling
         {
             ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, ex.HttpStatusCode);
         }
+        catch (InvalidCredentialsException ex)
+        {
+            ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, AutheticationException.StatusCode);
+        }
+        catch (ConfirmCodeExpiredException ex)
+        {
+            ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, AutheticationException.StatusCode);
+        }
         catch (UnauthorizedAccessException ex)
         {
             ErrorResponseDto error = await HandleExceptionAsync(httpContext, ex, HttpStatusCode.Unauthorized);

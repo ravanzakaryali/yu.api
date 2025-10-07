@@ -20,10 +20,13 @@ internal class ConfirmCodeCommandHandler(IYuDbContext dbContext, IHttpContextAcc
             _ => TimeSpan.FromHours(1)
         };
 
-        Console.WriteLine(DateTime.UtcNow);
-        Console.WriteLine(member.ConfirmCodeGeneratedDate);
+        Console.WriteLine("Confirm code: " + member.ConfirmCode);
+        if(member.ConfirmCode != request.Code)
+            throw new InvalidCredentialsException("Confirm code");
+
         if (member.ConfirmCodeGeneratedDate.HasValue && DateTime.UtcNow > member.ConfirmCodeGeneratedDate.Value.Add(expireTimeSpan))
-            throw new Exception("Confirm code exp date");
+            throw new ConfirmCodeExpiredException("Expired date");
+
 
 
 

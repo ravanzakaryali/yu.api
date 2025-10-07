@@ -8,7 +8,12 @@ internal class GetOrderDetailsQueryHandler(IYuDbContext dbContext) : IRequestHan
     {
         Order order = await dbContext.Orders
             .Include(o => o.Services)
+                .ThenInclude(os => os.OrderClothingItems)
+                    .ThenInclude(oci => oci.ClothingItem)
             .Include(o => o.OrderStatusHistories)
+            .Include(o => o.Images)
+                .ThenInclude(oi => oi.File)
+            .Include(o => o.PromoCode)
             .FirstOrDefaultAsync(o => o.Id == request.OrderId, cancellationToken)
             ?? throw new NotFoundException(nameof(Order), request.OrderId);
 
@@ -34,12 +39,28 @@ internal class GetOrderDetailsQueryHandler(IYuDbContext dbContext) : IRequestHan
         }
 
 
+        List<OrderDetailServiceResponseDto> services = [.. order.Services.Select(os => new OrderDetailServiceResponseDto
+        {
+            ServiceName = os.ServiceName,
+            Count = os.Count,
+            ClothingItem = os.OrderClothingItems?.Select(oci => new OrderDetailClothingItemResponseDto
+            {
+                Name = oci.ClothingItem.Name,
+                Count = oci.Count
+            }).ToList()
+        })];
+
         OrderDetailsResponseDto orderResponse = new()
         {
             OrderNumber = order.OrderNumber,
             Comment = order.Comment,
             TotalPrice = order.TotalPrice,
             OrderStatusHistory = orderStatusHistory,
+            Services = services,
+            PromoCodeValue = order.PromoCode?.Code,
+            Images = order.Images.Select(i => i.File.Path).ToList(),
+            Description = order.Comment,
+            MainDescription = services.Count > 0 ? string.Join(", ", services.Select(s => s.ServiceName)) : string.Empty,
         };
 
 

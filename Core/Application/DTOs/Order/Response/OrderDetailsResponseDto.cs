@@ -11,14 +11,15 @@ public class OrderDetailsResponseDto
     public string Description { get; set; } = null!;
     public string OrderNumber { get; set; } = null!;
     public string MainDescription { get; set; } = null!;
+    public string? PromoCodeValue { get; set; }
     public ICollection<OrderStatusHistoryResponseDto> OrderStatusHistory { get; set; }
+    public List<OrderDetailServiceResponseDto> Services { get; set; } = null!;
+    public List<string> Images { get; set; } = null!;
 }
 
 public class OrderDetailsAdminResponseDto : OrderDetailsResponseDto
 {
     public PromoCodeResponseDto? PromoCode { get; set; }
-    public List<OrderDetailServiceResponseDto> Services { get; set; } = null!;
-    public List<string> Images { get; set; } = null!;
 }
 
 public class OrderStatusHistoryResponseDto
@@ -31,5 +32,11 @@ public class OrderDetailServiceResponseDto
 {
     public string ServiceName { get; set; } = null!;
     public int? Count { get; set; }
-    public List<string>? ClothingItem { get; set; }
+    public List<OrderDetailClothingItemResponseDto>? ClothingItem { get; set; }
+}
+
+public  class OrderDetailClothingItemResponseDto
+{
+    public string Name { get; set; } = null!;
+    public int Count { get; set; }
 }
